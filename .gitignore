@@ -1,7 +1,9 @@
 # ignore Directory
 cifar10/data/*
 !cifar10/data/.gitkeep
+
 mnist/data/*
 !mnist/data/.gitkeep
+
 fashion-mnist/data/*
 !fashion-mnist/data/.gitkeep
