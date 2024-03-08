@@ -1,0 +1,3 @@
+# ignore Directory
+cifar10/data/
+mnist/data/
