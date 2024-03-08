@@ -5,6 +5,8 @@ from torch import nn
 from torch.utils.data import Dataset
 from torchvision import transforms
 
+import matplotlib.pyplot as plt
+
 from src.dataset import FashionMnistDataset
 from src.model import NeuralNetwork
 
@@ -36,7 +38,10 @@ def predict(test_data: Dataset, model: nn.Module, device) -> None:
     ]
 
     model.eval()
-    image = test_data[0][0].to(device)
+    image = test_data[0][0]
+    plt.imshow(image)
+    plt.savefig("output_image.png")
+    image = image.to(device)
     image = image.unsqueeze(0)
     target = test_data[0][1].to(device)
     with torch.no_grad():
