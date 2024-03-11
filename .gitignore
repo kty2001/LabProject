@@ -6,6 +6,10 @@ cifar10_2/data/*
 
 mnist/data/*
 !mnist/data/.gitkeep
+mnist_2/data/*
+!mnist/data/.gitkeep
 
 fashion-mnist/data/*
+!fashion-mnist/data/.gitkeep
+fashion-mnist_2/data/*
 !fashion-mnist/data/.gitkeep

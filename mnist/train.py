@@ -8,11 +8,12 @@ from src.model import NeuralNetwork
 from src.dataset import MnistDataset
 
 
+# 파서 설정
 parser = argparse.ArgumentParser()
 parser.add_argument("--device", default="cpu", help="학습에 사용되는 장치")
 args = parser.parse_args()
 
-
+# 학습 에포크
 def train_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, loss_fn: nn.Module, optimizer) -> None:
     """MNIST 데이터셋으로 뉴럴 네트워크 훈련
     
@@ -30,23 +31,28 @@ def train_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, loss_
 
     size = len(dataloader.dataset)
     model.train()
+    # 훈련
     for batch, (images, targets) in enumerate(dataloader):
+        # 데이터 gpu로 이동
         images = images.to(device)
         targets = targets.to(device)
         targets = torch.flatten(targets)
 
+        # 예측 및 오차 계산
         preds = model(images)
         loss = loss_fn(preds, targets)
 
+        # 역전파
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
+        # 학습 과정 출력
         if batch % 100 == 0:
             loss = loss.item()
             current = batch * len(images)
             print(f'loss: {loss:>7f} [{current:5d}/{size:>5d}]')
-
+# 검증 에포크
 def valid_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, loss_fn: nn.Module) -> None:
     """MNIST 데이터셋으로 뉴럴 네트워크 성능 테스트
     
@@ -65,22 +71,29 @@ def valid_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, loss_
     model.eval()
     test_loss = 0
     correct = 0
+    # 검증
     with torch.no_grad():
         for images, targets in dataloader:
+            # 데이터 gpu로 이동
             images = images.to(device)
             targets = targets.to(device)
             targets = torch.flatten(targets)
 
+            # 예측
             preds = model(images)
-
+            
+            # 결과값 합산
             test_loss += loss_fn(preds, targets).item()
             correct += (preds.argmax(1) == targets).float().sum().item()
-    
+
+    # 평균 계산 및 출력
     test_loss /= num_batches
     correct /= size
     print(f'TestError: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n')
 
+# 학습
 def train(device: str):
+    # 하이퍼파라미터 값 설정
     num_classes = 10
     batch_size = 32
     epochs = 5
@@ -93,25 +106,32 @@ def train(device: str):
     param epochs: 전체 학습 데이터셋 훈련 횟수
     type epochs: int
     """
+    # 데이터셋 불러오기
     trainset = MnistDataset("./data/MNIST Dataset JPG format/MNIST - JPG - training")
     testset = MnistDataset("./data/MNIST Dataset JPG format/MNIST - JPG - testing")
 
+    # 데이터로더 초기화
     train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=4)
     test_loader = DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=4)
 
-    # device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    # 디바이스 설정
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
+    # 모델 초기화
     model = NeuralNetwork(num_classes=num_classes).to(device)
 
+    # 오차 함수 및 옵티마이저 초기화
     loss_fn = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9)
 
+    # 학습
     for t in range(epochs):
         print(f'Epoch {t+1}\n-------------------------')
         train_one_epoch(train_loader, device, model, loss_fn, optimizer)
         valid_one_epoch(test_loader, device, model, loss_fn)
     print("Done!")
 
+    # 결과 저장
     torch.save(model.state_dict(), 'mnist-net.pth')
     print('Saved Pytorch Model State to mnist-net.pth')
 

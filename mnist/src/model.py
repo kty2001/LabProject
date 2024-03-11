@@ -3,6 +3,7 @@ from torch import nn, Tensor
 class NeuralNetwork(nn.Module):
     """학습과 추론에 사용되는 간단한 뉴럴 네트워크"""
 
+    # 모델 초기화
     def __init__(self, num_classes: int) -> None:
         super().__init__()
         self.flatten = nn.Flatten()
@@ -14,6 +15,7 @@ class NeuralNetwork(nn.Module):
             nn.Linear(512, num_classes),            
         )
 
+    # 모델 생성
     def forward(self, x: Tensor) -> Tensor:
         """순전파 진행하는 함수
         
