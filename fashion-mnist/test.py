@@ -57,6 +57,7 @@ def test(device):
     num_classes = 10
     
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    print(device)
 
     test_data = FashionMnistDataset(
         image_dir,
