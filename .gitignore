@@ -1,21 +1,27 @@
 # ignore Directory in clonecoding
 clonecoding/cifar10/data/*
 !clonecoding/cifar10/data/.gitkeep
+clonecoding/cifar10/cifar-net-lenet.pth
 
 clonecoding/cifar10_2/data/*
 !clonecoding/cifar10_2/data/.gitkeep
+clonecoding/cifar10_2/cifar-net-lenet.pth
 
 clonecoding/mnist/data/*
 !clonecoding/mnist/data/.gitkeep
+clonecoding/mnist/mnist-net.pth
 
 clonecoding/mnist_2/data/*
-!clonecoding/mnist/data/.gitkeep
+!clonecoding/mnist_2/data/.gitkeep
+clonecoding/mnist_2/mnist-net.pth
 
 clonecoding/fashion-mnist/data/*
 !clonecoding/fashion-mnist/data/.gitkeep
+clonecoding/fashion-mnist/fashion-mnist-net.pth
 
 clonecoding/fashion-mnist_2/data/*
-!clonecoding/fashion-mnist/data/.gitkeep
+!clonecoding/fashion-mnist_2/data/.gitkeep
+clonecoding/fashion-mnist_2/fashion-mnist-net.pth
 
 
 # another Directory
