@@ -1,6 +1,4 @@
 # ignore Directory
-cifar10/data/*
-!cifar10/data/.gitkeep
 cifar10_2/data/*
 !cifar10_2/data/.gitkeep
 
