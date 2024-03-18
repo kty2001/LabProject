@@ -25,5 +25,10 @@ classification/clonecoding/fashion-mnist_2/fashion-mnist-net.pth
 
 # ignore Directory in classification/WebCrawling
 classification/WebCrawling/*
+!classification/WebCrawling/BSCrawling.py
+!classification/WebCrawling/images
+classification/WebCrawling/images/*
+!classification/WebCrawling/images/.gitkeep
+
 
 # another Directory
