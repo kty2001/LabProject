@@ -24,9 +24,10 @@ classification/clonecoding/fashion-mnist_2/data/*
 classification/clonecoding/fashion-mnist_2/fashion-mnist-net.pth
 
 # ignore Directory in classification/WebCrawling
-classification/WebCrawling/*
-!classification/WebCrawling/BSCrawling.py
-!classification/WebCrawling/images
+classification/WebCrawling/chromedriver
+classification/WebCrawling/chromedriver.exe
+classification/WebCrawling/geckodriver.log
+classification/WebCrawling/SNCrawling.py
 classification/WebCrawling/images/*
 !classification/WebCrawling/images/.gitkeep
 
