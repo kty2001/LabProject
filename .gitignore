@@ -1,27 +1,29 @@
-# ignore Directory in clonecoding
-clonecoding/cifar10/data/*
-!clonecoding/cifar10/data/.gitkeep
-clonecoding/cifar10/cifar-net-lenet.pth
+# ignore Directory in classification/clonecoding
+classification/clonecoding/cifar10/data/*
+!classification/clonecoding/cifar10/data/.gitkeep
+classification/clonecoding/cifar10/cifar-net-lenet.pth
 
-clonecoding/cifar10_2/data/*
-!clonecoding/cifar10_2/data/.gitkeep
-clonecoding/cifar10_2/cifar-net-lenet.pth
+classification/clonecoding/cifar10_2/data/*
+!classification/clonecoding/cifar10_2/data/.gitkeep
+classification/clonecoding/cifar10_2/cifar-net-lenet.pth
 
-clonecoding/mnist/data/*
-!clonecoding/mnist/data/.gitkeep
-clonecoding/mnist/mnist-net.pth
+classification/clonecoding/mnist/data/*
+!classification/clonecoding/mnist/data/.gitkeep
+classification/clonecoding/mnist/mnist-net.pth
 
-clonecoding/mnist_2/data/*
-!clonecoding/mnist_2/data/.gitkeep
-clonecoding/mnist_2/mnist-net.pth
+classification/clonecoding/mnist_2/data/*
+!classification/clonecoding/mnist_2/data/.gitkeep
+classification/clonecoding/mnist_2/mnist-net.pth
 
-clonecoding/fashion-mnist/data/*
-!clonecoding/fashion-mnist/data/.gitkeep
-clonecoding/fashion-mnist/fashion-mnist-net.pth
+classification/clonecoding/fashion-mnist/data/*
+!classification/clonecoding/fashion-mnist/data/.gitkeep
+classification/clonecoding/fashion-mnist/fashion-mnist-net.pth
 
-clonecoding/fashion-mnist_2/data/*
-!clonecoding/fashion-mnist_2/data/.gitkeep
-clonecoding/fashion-mnist_2/fashion-mnist-net.pth
+classification/clonecoding/fashion-mnist_2/data/*
+!classification/clonecoding/fashion-mnist_2/data/.gitkeep
+classification/clonecoding/fashion-mnist_2/fashion-mnist-net.pth
 
+# ignore Directory in classification/WebCrawling
+classification/WebCrawling/*
 
 # another Directory
