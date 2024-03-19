@@ -6,7 +6,7 @@ import pandas as pd
 from tqdm import tqdm
 
 
-def save_data():
+"""def save_data():
     train_csv_path = 'images/exercise_train.csv'
     test_csv_path = 'images/exercise_test.csv'
 
@@ -52,4 +52,4 @@ def split_dataset(csv_path: os.PathLike, split_rate: float = 0.2) -> None:
 
 
 if __name__ == '__main__':
-    save_data()
+    save_data()"""
