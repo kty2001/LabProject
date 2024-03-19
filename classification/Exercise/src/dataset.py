@@ -16,8 +16,12 @@ class ExerciseDataset(Dataset):
         # 데이터 클래스 저장
         self.data_dir = data_dir
         self.classes = os.listdir(data_dir)     # 리스트로 저장
-        if ".gitkeep" in self.classes:
-            self.classes.remove(".gitkeep")     # .gitkeep 제거
+        try:
+            self.classes.remove(".gitkeep")         # .gitkeep 제거
+            self.classes.remove("BSCrawling.py")    # BSCrawling.py 제거
+            self.classes.remove("preprocess.py")    # preprocess.py 제거
+        except:
+            pass            
         
         # 데이터 클래스 레이블링
         self.classes_dic = {}
