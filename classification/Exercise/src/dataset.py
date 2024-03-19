@@ -34,7 +34,7 @@ class ExerciseDataset(Dataset):
         self.data = glob.glob(os.path.join(data_dir + '/*/*.jpg'))  # 모든 이미지 경로 저장
 
         # transform 초기화
-        self.transform = transform      # None
+        self.transform = transform
 
     def __len__(self):
         return len(self.data)   # data 길이 반환: 총 이미지 수(현재 600)
