@@ -5,7 +5,6 @@ import requests
 
 import urllib.request
 import urllib.error
-from urllib.error import URLError, HTTPError
 from bs4 import BeautifulSoup
 
 
