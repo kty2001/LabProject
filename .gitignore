@@ -31,5 +31,9 @@ classification/WebCrawling/SNCrawling.py
 classification/WebCrawling/images/*
 !classification/WebCrawling/images/.gitkeep
 
+# ignore Directory in classification/Exercise
+classification/Exercise/images/*
+!classification/Exercise/images/.gitkeep
+
 
 # another Directory
