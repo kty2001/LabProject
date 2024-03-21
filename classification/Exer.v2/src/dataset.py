@@ -28,8 +28,6 @@ class ExerciseDataset(Dataset):
         self.classes_dic = {}
         for label, cls in enumerate(self.classes):
             self.classes_dic[cls] = label       # classes에 저장된 순서로 레이블 매김
-        # print(classes_dic)                    # {'풀업': 0, '스쿼트': 1, '벤치프레스': 2, '데드리프트': 3, '오버헤드프레스': 4}
-        # print(classes)                        # ['풀업', '스쿼트', '벤치프레스', '데드리프트', '오버헤드프레스']
         
         # 데이터 불러오기
         self.data = glob.glob(os.path.join(data_dir + '/*/*.jpg'))  # 모든 이미지 경로 저장
@@ -50,4 +48,5 @@ class ExerciseDataset(Dataset):
         image = torch.FloatTensor(image)        # 이미지 float형 텐서로 변환
         image = image.permute(2, 0, 1)
         label = torch.LongTensor([int(label)])  # 레이블 long형 텐서로 변환
+
         return image, label

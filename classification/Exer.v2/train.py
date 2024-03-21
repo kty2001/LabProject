@@ -3,6 +3,7 @@ import argparse
 import torch
 from torch import nn, optim
 from torch.utils.data import DataLoader
+from torchvision import transforms
 
 from src.model import ResNet18Classifier
 from src.dataset import ExerciseDataset
@@ -62,8 +63,8 @@ def train(device: str):
     epochs = 20
     lr = 1e-3
 
-    trainset = ExerciseDataset("./images/train")
-    testset = ExerciseDataset("./images/test")
+    trainset = ExerciseDataset("./images/train", transform=transform)
+    testset = ExerciseDataset("./images/test", transform=transform)
 
     train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=4)
     test_loader = DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=4)
