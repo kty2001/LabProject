@@ -55,8 +55,8 @@ def predict(test_data: Dataset, model: nn.Module, device) -> None:
 # test 함수
 def test(device):
     # 디렉토리 설정
-    image_dir = 'data/fashion-mnist/images'
-    test_csv_path = 'data/fashion-mnist/test_answer.csv'
+    image_dir = 'data/images'
+    test_csv_path = 'data/test_answer.csv'
 
     # 하이퍼파라미터 설정
     num_classes = 10

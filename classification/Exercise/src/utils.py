@@ -29,7 +29,7 @@ from tqdm import tqdm
     labels_df.index.name = 'id'
     labels_df.to_csv(os.path.join(root_dir, 'answers.csv'), index=True)
 
-
+"""
 def split_dataset(csv_path: os.PathLike, split_rate: float = 0.2) -> None:
     # Dirty-MNIST 데이터셋을 비율에 맞춰 train / test로 나눕니다.
     root_dir = os.path.dirname(csv_path)
@@ -51,5 +51,5 @@ def split_dataset(csv_path: os.PathLike, split_rate: float = 0.2) -> None:
     train_df.to_csv(os.path.join(root_dir, 'train_answer.csv'), index=False)
 
 
-if __name__ == '__main__':
+"""if __name__ == '__main__':
     save_data()"""

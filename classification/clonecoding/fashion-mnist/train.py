@@ -92,10 +92,10 @@ def val_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, loss_fn
 
 # 훈련 진행 함수
 def train(device):
-    image_dir = 'data/fashion-mnist/images'
-    csv_path = 'data/fashion-mnist/answers.csv'
-    train_csv_path = 'data/fashion-mnist/train_answer.csv'
-    test_csv_path = 'data/fashion-mnist/test_answer.csv'
+    image_dir = 'data/images'
+    csv_path = 'data/answers.csv'
+    train_csv_path = 'data/train_answer.csv'
+    test_csv_path = 'data/test_answer.csv'
 
     num_classes = 10
     batch_size = 32
