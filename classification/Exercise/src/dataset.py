@@ -6,6 +6,7 @@ from pathlib import Path
 from PIL import Image
 
 from torch.utils.data import Dataset
+import torchvision
 import torch
 
 import numpy as np
@@ -44,9 +45,9 @@ class ExerciseDataset(Dataset):
         label = self.classes_dic[Path(image).parts[-2]]     # 이미지 디렉토리명의 레이블 저장
         
         image = Image.open(image)               # 이미지 PIL로 열기
-        image.show()                            # 이미지 출력
         image = np.array(image)                 # 이미지 numpy 배열로 변환
 
         image = torch.FloatTensor(image)        # 이미지 float형 텐서로 변환
+        image = image.permute(2, 0, 1)
         label = torch.LongTensor([int(label)])  # 레이블 long형 텐서로 변환
         return image, label

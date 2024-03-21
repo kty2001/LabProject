@@ -36,6 +36,6 @@ classification/Exercise/images/*
 !classification/Exercise/images/.gitkeep
 !classification/Exercise/images/BSCrawling.py
 !classification/Exercise/images/preprocess.py
-
+classification/Exercise/exercise-resnet18.pth
 
 # another Directory
