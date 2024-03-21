@@ -1,3 +1,5 @@
+# ignore Directory in classification
+
 # ignore Directory in classification/clonecoding
 classification/clonecoding/cifar10/data/*
 !classification/clonecoding/cifar10/data/.gitkeep
@@ -24,10 +26,9 @@ classification/clonecoding/fashion-mnist_2/data/*
 classification/clonecoding/fashion-mnist_2/fashion-mnist-net.pth
 
 # ignore Directory in classification/WebCrawling
-classification/WebCrawling/chromedriver
-classification/WebCrawling/chromedriver.exe
-classification/WebCrawling/geckodriver.log
-classification/WebCrawling/SNCrawling.py
+classification/WebCrawling/*
+!classification/WebCrawling/BSCrawling.py
+!classification/WebCrawling/SNCrawling.py
 classification/WebCrawling/images/*
 !classification/WebCrawling/images/.gitkeep
 
@@ -37,5 +38,12 @@ classification/Exercise/images/*
 !classification/Exercise/images/BSCrawling.py
 !classification/Exercise/images/preprocess.py
 classification/Exercise/exercise-resnet18.pth
+
+# ignore Directory in classification/Exer.v2
+classification/Exer.v2/images/*
+!classification/Exer.v2/images/.gitkeep
+!classification/Exer.v2/images/BSCrawling.py
+!classification/Exer.v2/images/preprocess.py
+classification/Exer.v2/exercise-resnet18.pth
 
 # another Directory
