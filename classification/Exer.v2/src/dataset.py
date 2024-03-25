@@ -49,4 +49,7 @@ class ExerciseDataset(Dataset):
         image = image.permute(2, 0, 1)
         label = torch.LongTensor([int(label)])  # 레이블 long형 텐서로 변환
 
+        if self.transform is not None:
+            image = self.transform(image)
+
         return image, label

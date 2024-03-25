@@ -49,7 +49,7 @@ def data_split(data_dir, split_frequency_rate):
 
 # 전처리 데이터 설정
 data_dir = '.\\'
-split_frequency_rate = 10
+split_frequency_rate = 5
 
 print('data_resize')
 data_resize(data_dir)
