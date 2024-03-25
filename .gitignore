@@ -44,6 +44,6 @@ classification/Exer.v2/images/*
 !classification/Exer.v2/images/.gitkeep
 !classification/Exer.v2/images/WebCrawling.py
 !classification/Exer.v2/images/preprocess.py
-classification/Exer.v2/exercise-resnet18.pth
+classification/Exer.v2/exercise-net.pth
 
 # another Directory

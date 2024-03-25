@@ -42,12 +42,8 @@ class ExerciseDataset(Dataset):
         image = self.data[index]                            # index에 맞는 이미지 가져오기
         label = self.classes_dic[Path(image).parts[-2]]     # 이미지 디렉토리명의 레이블 저장
         
-        image = Image.open(image)               # 이미지 PIL로 열기
+        image = Image.open(image).convert('RGB')               # 이미지 PIL로 열기
         image = np.array(image)                 # 이미지 numpy 배열로 변환
-
-        image = torch.FloatTensor(image)        # 이미지 float형 텐서로 변환
-        image = image.permute(2, 0, 1)
-        label = torch.LongTensor([int(label)])  # 레이블 long형 텐서로 변환
 
         if self.transform is not None:
             image = self.transform(image)

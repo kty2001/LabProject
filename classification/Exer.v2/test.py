@@ -4,6 +4,7 @@ import torch
 from torch import nn
 from torch.utils.data import Dataset
 
+from src.model import ResNet152Classifier
 from src.model import ResNet18Classifier
 from src.dataset import ExerciseDataset
 
@@ -33,8 +34,8 @@ def test(device):
         print(device)
 
     test_data = ExerciseDataset("./images/test")
-    model = ResNet18Classifier(num_classes=num_classes).to(device)
-    model.load_state_dict(torch.load('exercise-resnet18.pth'))
+    model = ResNet152Classifier(num_classes=num_classes).to(device)
+    model.load_state_dict(torch.load('exercise-net.pth'))
 
     predict(test_data, model, device)
 

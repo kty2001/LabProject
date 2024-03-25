@@ -6,6 +6,8 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 
 from src.model import ResNet152Classifier
+from src.model import ResNet50Classifier
+from src.model import ResNet18Classifier
 from src.dataset import ExerciseDataset
 
 
@@ -34,6 +36,8 @@ def train_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, loss_
             current = batch * len(images)
             print(f'loss: {loss:>7f}  [{current:>5d}/{size:>5d}]')
 
+    return loss
+
 
 def valid_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, loss_fn: nn.Module) -> None:
     size = len(dataloader.dataset)
@@ -56,15 +60,19 @@ def valid_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, loss_
     correct /= size
     print(f'Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n')
 
+    return [100*correct, test_loss]
+
 
 def train(device: str):
     num_classes = 5
     batch_size = 32
-    epochs = 50
+    epochs = 30
     lr = 1e-3
 
     transform = transforms.Compose([
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+        transforms.ToTensor(),
+        transforms.Resize((224, 224)),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
     ])
 
     trainset = ExerciseDataset("./images/train", transform=transform)
@@ -75,21 +83,29 @@ def train(device: str):
 
     if device == 'cuda':
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        print(device)
+        print("------trianing by", device, "------")
 
     model = ResNet152Classifier(num_classes=num_classes).to(device)
 
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9)
+    optimizer = optim.SGD(model.parameters(), lr=lr)
+
+    train_results = []
+    valid_results = []
 
     for t in range(epochs):
         print(f'Epoch {t+1}\n-------------------------------')
-        train_one_epoch(train_loader, device, model, loss_fn, optimizer)
-        valid_one_epoch(test_loader, device, model, loss_fn)
+        train_result = train_one_epoch(train_loader, device, model, loss_fn, optimizer)
+        valid_result = valid_one_epoch(test_loader, device, model, loss_fn)
+        train_results.append(train_result)
+        valid_results.append(valid_result)
     print('Done!')
 
-    torch.save(model.state_dict(), 'exercise-resnet18.pth')
-    print('Saved PyTorch Model State to exercise-resnet18.pth')
+    torch.save(model.state_dict(), 'exercise-net.pth')
+    print('Saved PyTorch Model State to exercise-net.pth')
+
+    for i in range(len(train_results)):
+        print(f"Epoch {i+1} - train_loss: {train_results[i]:>5f} / valid_loss: {valid_results[i][1]:>5f} / accuracy: {valid_results[i][0]:>0.1f}%")
 
 
 if __name__ == "__main__":
