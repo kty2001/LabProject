@@ -5,7 +5,7 @@ from torch import nn, optim
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
-from src.model import ResNet18Classifier
+from src.model import ResNet152Classifier
 from src.dataset import ExerciseDataset
 
 
@@ -60,8 +60,12 @@ def valid_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, loss_
 def train(device: str):
     num_classes = 5
     batch_size = 32
-    epochs = 20
+    epochs = 50
     lr = 1e-3
+
+    transform = transforms.Compose([
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+    ])
 
     trainset = ExerciseDataset("./images/train", transform=transform)
     testset = ExerciseDataset("./images/test", transform=transform)
@@ -73,7 +77,7 @@ def train(device: str):
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
         print(device)
 
-    model = ResNet18Classifier(num_classes=num_classes).to(device)
+    model = ResNet152Classifier(num_classes=num_classes).to(device)
 
     loss_fn = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9)
