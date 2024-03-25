@@ -27,7 +27,7 @@ def images_download(search_word, images_num):
         elem.clear()
         elem.send_keys(search_word)
         elem.send_keys(Keys.RETURN)
-        time.sleep(5)
+        time.sleep(3)
 
         # 스크롤 다운
         SCROLL_PAUSE_TIME = 1.5
@@ -56,7 +56,7 @@ def images_download(search_word, images_num):
         soup = BeautifulSoup(url, 'html.parser')	 #soup 객체 생성
         time.sleep(5)
 
-        imgs = soup.find_all("img")       # 모든 img 선택
+        imgs = soup.find_all("img", class_="rg_i Q4LuWd")       # 모든 img 선택
         print(search_word, len(imgs))
 
         img_num = 0
@@ -67,7 +67,7 @@ def images_download(search_word, images_num):
                 img_num += 1
                 if img_num % 10 == 0:
                     print("now: ", img_num)
-                    time.sleep(3)
+                    time.sleep(1)
             except:
                 print('이미지 오류')
 
@@ -79,8 +79,8 @@ def images_download(search_word, images_num):
 options = Options()
 options.add_argument('--disable-blink-features=AutomationControlled')
 
-search_words = ["pullup", "overheadpress", "squat", "deadlift", "benchpress"]
-images_num = 100
+search_words = ["pullup", "plank", "squat", "deadlift", "benchpress"]
+images_num = 150
 
 chromedriver_path = './chromedriver.exe'
 driver = webdriver.Chrome(executable_path=chromedriver_path)
