@@ -9,8 +9,8 @@ import cv2
 
 # 데이터 resize
 def data_resize(data_dir):
-    data = glob.glob(os.path.join(data_dir + '/*/*.jpg'))
-
+    data = glob.glob(os.path.join(data_dir + '\\*\\*.jpg'))
+    print("len(data):", len(data))
     for index in range(len(data)):
         image_path = data[index]
 
@@ -48,7 +48,7 @@ def data_split(data_dir, split_frequency_rate):
 
 
 # 전처리 데이터 설정
-data_dir = './'
+data_dir = '.\\'
 split_frequency_rate = 10
 
 print('data_resize')
