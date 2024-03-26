@@ -118,7 +118,7 @@ def train(device: str):
 
     num_classes = len(trainset.classes_dic)
     batch_size = 32
-    epochs = 30
+    epochs = 100
     lr = 1e-3
 
     train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=4)
