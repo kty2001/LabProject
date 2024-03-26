@@ -147,7 +147,6 @@ def train(device: str):
 
     for i in range(epochs):
         print(f"Epoch {i+1} - train_loss: {train_results[i]:>5f} / valid_loss: {valid_results[i]:>5f} / accuracy: {100*corrects[i]:>0.1f}%")
-    print("\n")
 
     torch.save(model.state_dict(), 'exercise-net.pth')
     print('Saved PyTorch Model State to exercise-net.pth')
