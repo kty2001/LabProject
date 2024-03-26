@@ -1,5 +1,8 @@
 import argparse
 
+import matplotlib.pyplot as plt
+import numpy as np
+
 import torch
 from torch import nn, optim
 from torch.utils.data import DataLoader
@@ -36,8 +39,7 @@ def train_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, loss_
             current = batch * len(images)
             print(f'loss: {loss:>7f}  [{current:>5d}/{size:>5d}]')
 
-    return loss
-
+    return loss.item()
 
 def valid_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, loss_fn: nn.Module) -> None:
     size = len(dataloader.dataset)
@@ -60,15 +62,51 @@ def valid_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, loss_
     correct /= size
     print(f'Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n')
 
-    return [100*correct, test_loss]
+    return test_loss, correct
 
+def smooth_curve(points, factor=0.9):
+    smoothed_points = []
+    for point in points:
+        if smoothed_points:
+            previous = smoothed_points[-1]
+            smoothed_points.append(previous * factor + point * (1 - factor))
+        else:
+            smoothed_points.append(point)
+    return smoothed_points
+
+def visualization(train_results, valid_results, corrects, epochs):
+
+    train_loss = np.array(train_results)
+    valid_loss = np.array(valid_results)
+    correct = np.array(corrects)
+    smoothed_train_loss = smooth_curve(train_loss)
+    smoothed_valid_loss = smooth_curve(valid_loss)
+    smoothed_correct = smooth_curve(correct)
+    plt.figure(figsize=(20, 10))
+
+    plt.subplot(1, 2, 1)
+    plt.plot(range(1, epochs + 1), train_loss, label='train_loss', color="b", alpha=0.2)
+    plt.plot(range(1, epochs + 1), smoothed_train_loss, label='Smoothed train_loss', color="b")
+    plt.plot(range(1, epochs + 1), valid_loss, label='valid_loss', color="r", alpha=0.2)
+    plt.plot(range(1, epochs + 1), smoothed_valid_loss, label='Smoothed valid_loss', color="r")
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.title('Loss Graph')
+    plt.legend()
+    
+    # Correct 시각화
+    plt.subplot(1, 2, 2)
+    plt.plot(range(1, epochs + 1), correct, label='correct')
+    plt.plot(range(1, epochs + 1), smoothed_correct, label='Smoothed correct')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.title('Smoothed Correct')
+    plt.legend()
+
+    plt.tight_layout()
+    plt.show()
 
 def train(device: str):
-    num_classes = 5
-    batch_size = 32
-    epochs = 30
-    lr = 1e-3
-
     transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Resize((224, 224)),
@@ -78,34 +116,43 @@ def train(device: str):
     trainset = ExerciseDataset("./images/train", transform=transform)
     testset = ExerciseDataset("./images/test", transform=transform)
 
+    num_classes = len(trainset.classes_dic)
+    batch_size = 32
+    epochs = 30
+    lr = 1e-3
+
     train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=4)
     test_loader = DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=4)
 
     if device == 'cuda':
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        print("------trianing by", device, "------")
+        print("\n<<< trianing by", device, ">>>\n")
 
     model = ResNet152Classifier(num_classes=num_classes).to(device)
 
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=lr)
+    optimizer = optim.SGD(model.parameters(), momentum=0.9, lr=lr)
 
     train_results = []
     valid_results = []
+    corrects = []
 
     for t in range(epochs):
         print(f'Epoch {t+1}\n-------------------------------')
-        train_result = train_one_epoch(train_loader, device, model, loss_fn, optimizer)
-        valid_result = valid_one_epoch(test_loader, device, model, loss_fn)
-        train_results.append(train_result)
+        train_results.append(train_one_epoch(train_loader, device, model, loss_fn, optimizer))
+        valid_result, correct = valid_one_epoch(test_loader, device, model, loss_fn)
         valid_results.append(valid_result)
+        corrects.append(correct)
     print('Done!')
+
+    for i in range(epochs):
+        print(f"Epoch {i+1} - train_loss: {train_results[i]:>5f} / valid_loss: {valid_results[i]:>5f} / accuracy: {100*corrects[i]:>0.1f}%")
+    print("\n")
 
     torch.save(model.state_dict(), 'exercise-net.pth')
     print('Saved PyTorch Model State to exercise-net.pth')
-
-    for i in range(len(train_results)):
-        print(f"Epoch {i+1} - train_loss: {train_results[i]:>5f} / valid_loss: {valid_results[i][1]:>5f} / accuracy: {valid_results[i][0]:>0.1f}%")
+    
+    visualization(train_results, valid_results, corrects, epochs)
 
 
 if __name__ == "__main__":

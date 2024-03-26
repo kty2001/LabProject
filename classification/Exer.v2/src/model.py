@@ -1,6 +1,8 @@
 from torch import nn, Tensor
 import torchvision.models as models
+import warnings
 
+warnings.filterwarnings("ignore")
 
 class ResNet152Classifier(nn.Module):
     def __init__(self, num_classes=10):
