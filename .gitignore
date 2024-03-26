@@ -32,18 +32,11 @@ classification/WebCrawling/*
 classification/WebCrawling/images/*
 !classification/WebCrawling/images/.gitkeep
 
-# ignore Directory in classification/Exercise
-classification/Exercise/images/*
-!classification/Exercise/images/.gitkeep
-!classification/Exercise/images/BSCrawling.py
-!classification/Exercise/images/preprocess.py
-classification/Exercise/exercise-resnet18.pth
-
-# ignore Directory in classification/Exer.v2
-classification/Exer.v2/images/*
-!classification/Exer.v2/images/.gitkeep
-!classification/Exer.v2/images/WebCrawling.py
-!classification/Exer.v2/images/preprocess.py
-classification/Exer.v2/exercise-net.pth
+# ignore Directory in classification/Exer
+classification/Exer/images/*
+!classification/Exer/images/.gitkeep
+!classification/Exer/images/WebCrawling.py
+!classification/Exer/images/preprocess.py
+classification/Exer/exercise-net.pth
 
 # another Directory

@@ -79,8 +79,8 @@ def visualization(train_results, valid_results, corrects, epochs):
     train_loss = np.array(train_results)
     valid_loss = np.array(valid_results)
     correct = np.array(corrects)
-    smoothed_train_loss = smooth_curve(train_loss)
-    smoothed_valid_loss = smooth_curve(valid_loss)
+    smoothed_train_loss = smooth_curve(train_loss, factor=0.75)
+    smoothed_valid_loss = smooth_curve(valid_loss, factor=0.75)
     smoothed_correct = smooth_curve(correct)
     plt.figure(figsize=(20, 10))
 
@@ -146,7 +146,7 @@ def train(device: str):
     print('Done!')
 
     for i in range(epochs):
-        print(f"Epoch {i+1} - train_loss: {train_results[i]:>5f} / valid_loss: {valid_results[i]:>5f} / accuracy: {100*corrects[i]:>0.1f}%")
+        print(f"Epoch {i+1:>2d} - train_loss: {train_results[i]:>5f} / valid_loss: {valid_results[i]:>5f} / accuracy: {100*corrects[i]:>0.1f}%")
 
     torch.save(model.state_dict(), 'exercise-net.pth')
     print('Saved PyTorch Model State to exercise-net.pth')
