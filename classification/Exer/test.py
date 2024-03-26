@@ -32,7 +32,7 @@ def test(device):
 
     if device == 'cuda':
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        print("------trianing by", device, "------")
+        print("<<< trianing by", device, ">>>")
 
     transform = transforms.Compose([
         transforms.ToTensor(),
