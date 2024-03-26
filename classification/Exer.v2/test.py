@@ -3,6 +3,7 @@ import argparse
 import torch
 from torch import nn
 from torch.utils.data import Dataset
+from torchvision import transforms
 
 from src.model import ResNet152Classifier
 from src.model import ResNet18Classifier
@@ -31,9 +32,15 @@ def test(device):
 
     if device == 'cuda':
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        print(device)
+        print("------trianing by", device, "------")
 
-    test_data = ExerciseDataset("./images/test")
+    transform = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Resize((224, 224)),
+        transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    ])
+
+    test_data = ExerciseDataset("./images/test", transform=transform)
     model = ResNet152Classifier(num_classes=num_classes).to(device)
     model.load_state_dict(torch.load('exercise-net.pth'))
 

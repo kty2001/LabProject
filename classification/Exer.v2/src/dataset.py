@@ -47,5 +47,7 @@ class ExerciseDataset(Dataset):
 
         if self.transform is not None:
             image = self.transform(image)
+        
+        label = torch.LongTensor([int(label)])
 
         return image, label

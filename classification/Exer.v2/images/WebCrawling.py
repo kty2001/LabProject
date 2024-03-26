@@ -51,10 +51,10 @@ def images_download(search_word, images_num):
 
         # beautifulsoup로 페이지 html 읽기
         url = driver.page_source
-        time.sleep(5)
+        time.sleep(3)
 
         soup = BeautifulSoup(url, 'html.parser')	 #soup 객체 생성
-        time.sleep(5)
+        time.sleep(3)
 
         imgs = soup.find_all("img", class_="rg_i Q4LuWd")       # 모든 img 선택
         print(search_word, len(imgs))
