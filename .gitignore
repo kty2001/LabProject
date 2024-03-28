@@ -38,6 +38,5 @@ classification/Exer/images/*
 !classification/Exer/images/WebCrawling.py
 !classification/Exer/images/preprocess.py
 classification/Exer/exercise-net.pth
-classification/Exer/pyqt.py
 
 # another Directory

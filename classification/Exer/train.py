@@ -8,6 +8,10 @@ from torch import nn, optim
 from torch.utils.data import DataLoader
 from torchvision import transforms
 
+from src.model import EfficientNetB7Classifier
+from src.model import EfficientNetB5Classifier
+from src.model import EfficientNetB3Classifier
+from src.model import EfficientNetB1Classifier
 from src.model import ResNet152Classifier
 from src.model import ResNet50Classifier
 from src.model import ResNet18Classifier
@@ -80,8 +84,8 @@ def visualization(train_results, valid_results, corrects, epochs):
     valid_loss = np.array(valid_results)
     correct = np.array(corrects)
     smoothed_train_loss = smooth_curve(train_loss, factor=0.9)
-    smoothed_valid_loss = smooth_curve(valid_loss, factor=0.75)
-    smoothed_correct = smooth_curve(correct)
+    smoothed_valid_loss = smooth_curve(valid_loss, factor=0.9)
+    smoothed_correct = smooth_curve(correct, factor=0.8)
     plt.figure(figsize=(20, 10))
 
     plt.subplot(1, 2, 1)
@@ -117,21 +121,21 @@ def train(device: str):
     testset = ExerciseDataset("./images/test", transform=transform)
 
     num_classes = len(trainset.classes_dic)
-    batch_size = 32
-    epochs = 100
-    lr = 1e-3
+    batch_size = 16
+    epochs = 30
+    lr = 1e-4
 
-    train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=4)
-    test_loader = DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=4)
+    train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=0)
+    test_loader = DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=0)
 
     if device == 'cuda':
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
         print("\n<<< trianing by", device, ">>>\n")
 
-    model = ResNet152Classifier(num_classes=num_classes).to(device)
+    model = EfficientNetB7Classifier(num_classes=num_classes).to(device)
 
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), momentum=0.9, lr=lr)
+    optimizer = optim.Adam(model.parameters(), lr=lr)
 
     train_results = []
     valid_results = []
