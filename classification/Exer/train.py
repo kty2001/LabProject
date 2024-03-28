@@ -26,7 +26,10 @@ args = parser.parse_args()
 def train_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, loss_fn: nn.Module, optimizer) -> None:
     size = len(dataloader.dataset)
     model.train()
+    current = 0
     for batch, (images, targets) in enumerate(dataloader):
+        current += len(targets)
+
         images = images.to(device)
         targets = targets.to(device)
         targets = torch.flatten(targets)
@@ -38,10 +41,10 @@ def train_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, loss_
         loss.backward()
         optimizer.step()
 
-        if batch % 100 == 0:
-            loss = loss.item()
-            current = batch * len(images)
-            print(f'loss: {loss:>7f}  [{current:>5d}/{size:>5d}]')
+        if current % 320 == 0:
+            print(f'loss: {loss.item():>7f}  [{current:>5d}/{size:>5d}]')
+        elif current == size:
+            print(f'loss: {loss.item():>7f}  [{current:>5d}/{size:>5d}]')
 
     return loss.item()
 
@@ -122,7 +125,7 @@ def train(device: str):
 
     num_classes = len(trainset.classes_dic)
     batch_size = 16
-    epochs = 30
+    epochs = 50
     lr = 1e-4
 
     train_loader = DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=0)
@@ -140,6 +143,8 @@ def train(device: str):
     train_results = []
     valid_results = []
     corrects = []
+    best_corrects = 0.0
+    best_epoch = 0
 
     for t in range(epochs):
         print(f'Epoch {t+1}\n-------------------------------')
@@ -147,14 +152,21 @@ def train(device: str):
         valid_result, correct = valid_one_epoch(test_loader, device, model, loss_fn)
         valid_results.append(valid_result)
         corrects.append(correct)
+
+        if corrects[-1] >= best_corrects:
+            best_corrects = corrects[-1]
+            best_epoch = t+1
+            torch.save(model.state_dict(), 'best-exernet.pth')
     print('Done!')
 
     for i in range(epochs):
         print(f"Epoch {i+1:>2d} - train_loss: {train_results[i]:>5f} / valid_loss: {valid_results[i]:>5f} / accuracy: {100*corrects[i]:>0.1f}%")
     print()
     
-    torch.save(model.state_dict(), 'exercise-net.pth')
-    print('Saved PyTorch Model State to exercise-net.pth')
+    print(f'{best_epoch} Epoch: Saved Best Model State to best-exernet.pth')
+    
+    torch.save(model.state_dict(), 'exernet.pth')
+    print('Saved PyTorch Model State to exernet.pth')
     
     visualization(train_results, valid_results, corrects, epochs)
 

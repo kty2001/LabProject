@@ -11,10 +11,8 @@ import random
 
 
 def on_button1_clicked():
-    print('Random Image Load')
     global img_idx
     img_idx = random.randint(0, len(test_data))
-    print(img_idx)
 
     img_tensor = test_data[img_idx][0]
     image_np = img_tensor
@@ -24,14 +22,13 @@ def on_button1_clicked():
     pixmap = QPixmap.fromImage(q_img).scaled(448, 448, Qt.KeepAspectRatio)
     image_label.setPixmap(pixmap)
     
-    text_label.setText("") 
+    text_label.setText(f'Loaded Image Index: {img_idx}\n') 
 
 def on_button2_clicked():
-    print("Loaded Image Predict")
     img_pred, img_actual = test.test(device='cuda', idx=img_idx)
     
-    text_label.setText(f"Actual: {test_data.classes[img_actual]}, Predict: {test_data.classes[img_pred]}")  
-    print('Done!')
+    text_label.setText(f"Predict: {test_data.classes[img_pred]}  /  Actual: {test_data.classes[img_actual]}\n")
+    print("\nDone")
 
 
 def main():
@@ -63,13 +60,13 @@ def main():
     global text_label
     text_label = QLabel()
     text_label.setAlignment(Qt.AlignCenter)  # 텍스트를 중앙에 정렬합니다.
-    text_label.setFont(QFont("Arial", 16))  # 폰트 크기 조정
+    text_label.setFont(QFont("Times New Roman", 20))  # 폰트 크기 조정
     layout.addWidget(text_label)
 
     layout.addSpacing(50)
 
     # 버튼 1
-    button = QPushButton('Image Load')           # 버튼 위젯 생성
+    button = QPushButton('Random Image Load')           # 버튼 위젯 생성
     button.clicked.connect(on_button1_clicked)  # 버튼 클릭 시 이벤트 처리
     layout.addWidget(button)                   # 메인 레이아웃에 버튼 2 추가
 

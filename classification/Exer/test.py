@@ -38,7 +38,7 @@ def test(device, idx):
 
     if device == 'cuda':
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        print("<<< testing by", device, ">>>")
+        print("\n<<< testing by", device, ">>>\n")
 
     transform = transforms.Compose([
         transforms.ToTensor(),
@@ -50,7 +50,7 @@ def test(device, idx):
     num_classes = len(test_data.classes_dic)
 
     model = EfficientNetB7Classifier(num_classes=num_classes).to(device)
-    model.load_state_dict(torch.load('exercise-net.pth'))
+    model.load_state_dict(torch.load('best-exernet.pth'))
 
     img_pred, img_actual = predict(test_data, model, device, int(idx))
 
