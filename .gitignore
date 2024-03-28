@@ -37,6 +37,7 @@ classification/Exer/images/*
 !classification/Exer/images/.gitkeep
 !classification/Exer/images/WebCrawling.py
 !classification/Exer/images/preprocess.py
-classification/Exer/exercise-net.pth
+classification/Exer/exernet.pth
+classification/Exer/best-exernet.pth
 
 # another Directory
