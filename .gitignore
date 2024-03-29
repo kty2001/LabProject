@@ -40,4 +40,14 @@ classification/Exer/images/*
 classification/Exer/exernet.pth
 classification/Exer/best-exernet.pth
 
+# --------------------------------------------------------------------------------------------------
+
+# ignore Directory in object_detection
+
+# ignore Directory in object_detection/global_wheat_detection
+object_detection/global_wheat_detection/data/*
+!object_detection/global_wheat_detection/data/.gitkeep
+object_detection/global_wheat_detection/wheat-faster-rcnn.pth
+object_detection/global_wheat_detection/examples
+
 # another Directory
