@@ -186,7 +186,8 @@ def train(device) -> None:
     epochs = 5
     lr = 1e-3
 
-    split_dataset(csv_path)
+    metric = MeanAveragePrecision(csv_path=test_csv_path)
+    """split_dataset(csv_path)
 
     visualize_dataset(train_image_dir, train_csv_path, save_dir='examples/global-wheat-detection/train')
     visualize_dataset(train_image_dir, test_csv_path, save_dir='examples/global-wheat-detection/test')
@@ -217,7 +218,7 @@ def train(device) -> None:
     print('Done!')
 
     torch.save(model.state_dict(), 'wheat-faster-rcnn.pth')
-    print('Saved PtTorch Model State to wheat-faster-rcnn.pth')
+    print('Saved PtTorch Model State to wheat-faster-rcnn.pth')"""
 
 if __name__ == '__main__':
     train(args.device)
