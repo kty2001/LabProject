@@ -1,37 +1,14 @@
 .vscode
 __pycache__
 *.pth
+!*.gitkeep
+
 # ignore Directory in classification
 
 # ignore Directory in classification/clonecoding
 
 classification/clonecoding/*/data/*
 !classification/clonecoding/*/data/.gitkeep
-classification/clonecoding/*/src/__pycache__
-
-classification/clonecoding/cifar10/data/*
-!classification/clonecoding/cifar10/data/.gitkeep
-classification/clonecoding/cifar10/cifar-net-lenet.pth
-
-classification/clonecoding/cifar10_2/data/*
-!classification/clonecoding/cifar10_2/data/.gitkeep
-classification/clonecoding/cifar10_2/cifar-net-lenet.pth
-
-classification/clonecoding/mnist/data/*
-!classification/clonecoding/mnist/data/.gitkeep
-classification/clonecoding/mnist/mnist-net.pth
-
-classification/clonecoding/mnist_2/data/*
-!classification/clonecoding/mnist_2/data/.gitkeep
-classification/clonecoding/mnist_2/mnist-net.pth
-
-classification/clonecoding/fashion-mnist/data/*
-!classification/clonecoding/fashion-mnist/data/.gitkeep
-classification/clonecoding/fashion-mnist/fashion-mnist-net.pth
-
-classification/clonecoding/fashion-mnist_2/data/*
-!classification/clonecoding/fashion-mnist_2/data/.gitkeep
-classification/clonecoding/fashion-mnist_2/fashion-mnist-net.pth
 
 # ignore Directory in classification/WebCrawling
 classification/WebCrawling/*
@@ -45,8 +22,6 @@ classification/Exer/images/*
 !classification/Exer/images/.gitkeep
 !classification/Exer/images/WebCrawling.py
 !classification/Exer/images/preprocess.py
-classification/Exer/exernet.pth
-classification/Exer/best-exernet.pth
 
 # --------------------------------------------------------------------------------------------------
 
@@ -55,7 +30,6 @@ classification/Exer/best-exernet.pth
 # ignore Directory in object_detection/global_wheat_detection
 object_detection/global_wheat_detection/data/*
 !object_detection/global_wheat_detection/data/.gitkeep
-object_detection/global_wheat_detection/wheat-faster-rcnn.pth
 object_detection/global_wheat_detection/examples
 
 # another Directory
