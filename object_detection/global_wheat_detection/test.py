@@ -22,6 +22,7 @@ parser.add_argument("--device", default='cpu', help='학습에 사용되는 장�
 args = parser.parse_args()
 
 
+# 데이터 예측 시각화
 def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_dir: os.PathLike, conf_thr: float = 0.1, n_images: int = 10) -> None:
     """이미지에 bbox 그려서 저장 및 시각화
     
@@ -36,27 +37,35 @@ def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_
     :param conf_thr: confidence threshold - 해당 숫자에 만족하지 않는 bounding box 걸러내는 파라미터
     :type conf_thr: float
     """
+    # 디렉토리 없으면 생성, 있으면 삭제 후 생성
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     else:
         shutil.rmtree(save_dir)
         os.makedirs(save_dir)
 
+    # 클래스명 설정
     classes = ['wheat']
 
+    # 모델 상태 설정
     model.eval()
+
+    # n_image개의 이미지에 bbox 생성
     indices = random.choices(range(len(testset)), k=n_images)
     for i in tqdm(indices):
+        # testset[i] 이미지 데이터 저장 및 예측
         image, _, image_id = testset[i]
         image = [image.to(device)]
         pred = model(image)
 
+        # 이미지 및 예측 값 변환
         image = image[0].detach().cpu().numpy().transpose(1, 2, 0)
         pred = {k: v.detach().cpu() for k, v in pred[0].items()}
 
-        plt.imshow(image)
-        ax = plt.gca()
+        plt.imshow(image)   # 이미지 열기
+        ax = plt.gca()      # 축 생성
 
+        # 이미지에 박스 생성
         for box, category_id, score in zip(*pred.values()):
             if score >= conf_thr:
                 x1, y1, x2, y2 = box
@@ -64,6 +73,7 @@ def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_
                 h = y2 - y1
                 category_id = category_id.item()
 
+                # 박스 생성
                 rect = patches.Rectangle(
                     (x1, y1),
                     w, h,
@@ -71,7 +81,11 @@ def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_
                     edgecolor='green',
                     facecolor='none'
                 )
+
+                # 박스 추가
                 ax.add_patch(rect)
+
+                # 텍스트 추가
                 ax.text(
                     x1, y1,
                     f'{classes[category_id-1]}: {score:.2f}',
@@ -88,22 +102,27 @@ def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_
                     )
                 )
 
-        plt.axis('off')
-        plt.savefig(os.path.join(save_dir, f'{image_id}.jpg'), dpi=150, bbox_inches='tight', pad_inches=0)
-        plt.clf()
+        plt.axis('off') # 축 제거
+        plt.savefig(os.path.join(save_dir, f'{image_id}.jpg'), dpi=150, bbox_inches='tight', pad_inches=0)  # figure 저장
+        plt.clf()       # figure 초기화
 
+# 모델 테스트
 def test(device):
+    # 디렉토리 설정
     train_image_dir = 'data/global-wheat-detection/train'
     test_csv_path = 'data/global-wheat-detection/test_answer.csv'
 
+    # 파라미터 설정
     num_classes = 1
 
+    # 데이터셋 초기화
     test_data = WheatDataset(
         image_dir=train_image_dir,
         csv_path=test_csv_path,
         transform=transforms.ToTensor(),
     )
 
+    # 모델 초기화 및 로드
     model = fasterrcnn_resnet50_fpn(num_classes=num_classes+1)
     model.load_state_dict(torch.load('wheat-faster-rcnn.pth'))
     model.to(device)

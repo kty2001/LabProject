@@ -115,10 +115,6 @@ class MeanAveragePrecision:
                     'score': s
                 })
 
-    # detections 초기화
-    def reset(self):
-        self.detections = []
-
     # 결과 계산
     def compute(self):
         coco_dt = self.coco_gt.loadRes(self.detections)         # detections를 coco형식으로 변환하여 저장
@@ -127,3 +123,7 @@ class MeanAveragePrecision:
         coco_eval.evaluate()        # 예측 결과 평가
         coco_eval.accumulate()      # 예측 결과 누적 값 계산
         coco_eval.summarize()       # 성능 요약 및 출력
+        
+    # detections 초기화
+    def reset(self):
+        self.detections = []
