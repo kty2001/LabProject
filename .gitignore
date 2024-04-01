@@ -1,6 +1,10 @@
-.vscode
 __pycache__
 *.pth
+examples/
+
+
+# --------------------------------------------------------------------------------------------------
+
 
 # ignore Directory in classification
 
@@ -22,12 +26,18 @@ classification/Exer/images/*
 !classification/Exer/images/WebCrawling.py
 !classification/Exer/images/preprocess.py
 
+
 # --------------------------------------------------------------------------------------------------
+
 
 # ignore Directory in object_detection
 
 # ignore Directory in object_detection/global_wheat_detection
 object_detection/global_wheat_detection/data/*
-object_detection/global_wheat_detection/examples
+!object_detection/global_wheat_detection/data/.gitkeep
+
+
+# --------------------------------------------------------------------------------------------------
+
 
 # another Directory
