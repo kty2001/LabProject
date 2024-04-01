@@ -37,8 +37,8 @@ object_detection/global_wheat_detection/data/*
 !object_detection/global_wheat_detection/data/.gitkeep
 
 # ignore Directory in object_detection/HAcoco
-object_detection/HAcoco/annotations
-object_detection/HAcoco/val2017
+object_detection/HAcoco/annotations/*
+object_detection/HAcoco/val2017/*
 !object_detection/HAcoco/*/.gitkeep
 
 # --------------------------------------------------------------------------------------------------
