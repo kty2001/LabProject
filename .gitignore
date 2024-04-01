@@ -1,3 +1,6 @@
+.vscode
+__pycache__
+*.pth
 # ignore Directory in classification
 
 # ignore Directory in classification/clonecoding
@@ -6,6 +9,8 @@ classification/clonecoding/*/data/*
 !classification/clonecoding/*/data/.gitkeep
 classification/clonecoding/*/src/__pycache__
 
+classification/clonecoding/cifar10/data/*
+!classification/clonecoding/cifar10/data/.gitkeep
 classification/clonecoding/cifar10/cifar-net-lenet.pth
 
 classification/clonecoding/cifar10_2/data/*
