@@ -58,7 +58,7 @@ def bbox_visualize(img_annos, cate_dict, image_id, image):
 
 
 def makecategorydict(categories):
-    cate_dict ={}
+    cate_dict = {}
     for category in categories:
         cate_dict[category['id']] = category['name']
 
