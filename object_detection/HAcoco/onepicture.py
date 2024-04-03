@@ -1,5 +1,4 @@
 import os
-import json
 import random
 
 from pycocotools.coco import COCO
@@ -7,10 +6,6 @@ from pycocotools.coco import COCO
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.patheffects as pe
-from PIL import Image
-
-import numpy as np
-import pandas as pd
 
 
 def bbox_visualize(img_annos, cate_dict, image_id, image):
@@ -84,17 +79,22 @@ def image_open(img_ids, idx = 0):
     print("Image_open is Done!")
     return img_id, image
 
-coco = COCO('./annotations/instances_val2017.json')
+def step():
+    coco = COCO('./annotations/instances_val2017.json')
 
-img_ids = coco.getImgIds()
-idx = random.randint(0, len(img_ids))
-img_id, image = image_open(img_ids, idx)
+    img_ids = coco.getImgIds()
+    idx = random.randint(0, len(img_ids))
+    img_id, image = image_open(img_ids, idx)
 
-img_annotations = coco.getAnnIds(imgIds = img_ids[idx])
-img_annos = coco.loadAnns(img_annotations)
+    img_annotations = coco.getAnnIds(imgIds = img_ids[idx])
+    img_annos = coco.loadAnns(img_annotations)
 
-cat_ids = coco.getCatIds()
-categories = coco.loadCats(cat_ids)
-cate_dict = makecategorydict(categories)
+    cat_ids = coco.getCatIds()
+    categories = coco.loadCats(cat_ids)
+    cate_dict = makecategorydict(categories)
 
-bbox_visualize(img_annos, cate_dict, img_id, image)
+    bbox_visualize(img_annos, cate_dict, img_id, image)
+
+
+if __name__ == "__main__":
+    step()
