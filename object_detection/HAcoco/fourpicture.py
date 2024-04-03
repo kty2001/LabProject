@@ -1,18 +1,14 @@
 import onepicture as op
 
 import os
-import json
 import random
 
 from pycocotools.coco import COCO
 
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import matplotlib.patheffects as pe
 import cv2
 
 import numpy as np
-import pandas as pd
 
 
 def image_transform(img_id):
@@ -34,30 +30,30 @@ def image_concatenate(images):
     plt.show()
     plt.clf()   # 활성된 figure 지우고 비우기
 
+def step():
+    coco = COCO('./annotations/instances_val2017.json')
 
+    cat_ids = coco.getCatIds()
+    categories = coco.loadCats(cat_ids)
+    cate_dict = op.makecategorydict(categories)
 
-import onepicture as op
+    img_ids = coco.getImgIds()
+    idxes = random.sample(range(len(img_ids)), 4)
 
-coco = COCO('./annotations/instances_val2017.json')
+    images = [0 for _ in range(len(idxes))]
 
-cat_ids = coco.getCatIds()
-categories = coco.loadCats(cat_ids)
-cate_dict = op.makecategorydict(categories)
+    for i, idx in enumerate(idxes):
+        print(f"{i}: {idx} -------------------------")
+        img_id, image = op.image_open(img_ids, idx)
 
-img_ids = coco.getImgIds()
-idxes = random.sample(range(len(img_ids)), 4)
+        img_annotations = coco.getAnnIds(imgIds = img_ids[idx])
+        img_annos = coco.loadAnns(img_annotations)
+        
+        op.bbox_visualize(img_annos, cate_dict, img_id, image)
 
-images = [0 for _ in range(len(idxes))]
+        images[i] = image_transform(img_id)
 
-for i, idx in enumerate(idxes):
-    print(f"{i}: {idx} -------------------------")
-    img_id, image = op.image_open(img_ids, idx)
+    image_concatenate(images)
 
-    img_annotations = coco.getAnnIds(imgIds = img_ids[idx])
-    img_annos = coco.loadAnns(img_annotations)
-    
-    op.bbox_visualize(img_annos, cate_dict, img_id, image)
-
-    images[i] = image_transform(img_id)
-
-image_concatenate(images)
+if __name__ == "__main__":
+    step()
