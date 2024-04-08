@@ -41,6 +41,14 @@ object_detection/HAcoco/annotations/*
 object_detection/HAcoco/val2017/*
 !object_detection/HAcoco/*/.gitkeep
 
+# ignore Directory in object_detection/personalproject
+object_detection/personalproject/images/*
+object_detection/personalproject/labelme
+object_detection/personalproject/json_test.json
+object_detection/personalproject/json_train.json
+!object_detection/personalproject/images/.gitkeep
+!object_detection/personalproject/images/Crawling.py
+
 # --------------------------------------------------------------------------------------------------
 
 
