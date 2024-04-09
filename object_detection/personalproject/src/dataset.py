@@ -5,7 +5,6 @@ from typing import Callable, Optional, Sequence, Tuple
 
 import numpy as np
 from PIL import Image
-import pandas as pd
 
 import torch
 from torch import Tensor
@@ -52,7 +51,16 @@ class MyDataset(Dataset):
 
         # return 값 조정
         if self.transform is not None:
-            image = self.transform(image)       # image에 transform 적용
+            # bbox 좌표 resize
+            origin_w, origin_h = image.size
+            w_ratio, h_ratio = 256 / origin_w, 256 / origin_h
+            boxes[:, 0] *= w_ratio
+            boxes[:, 1] *= h_ratio
+            boxes[:, 2] *= w_ratio
+            boxes[:, 3] *= h_ratio
+
+            # image에 transform 적용
+            image = self.transform(image)       
 
             # target 텐서화
             target = {

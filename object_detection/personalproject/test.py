@@ -2,6 +2,8 @@ import argparse
 import os
 import random
 import shutil
+import json
+import numpy as np
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -14,7 +16,7 @@ from torch.utils.data import Dataset
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
 from torchvision import transforms
 
-from src.dataset import WheatDataset
+from src.dataset import MyDataset
 
 
 parser = argparse.ArgumentParser()
@@ -23,20 +25,7 @@ args = parser.parse_args()
 
 
 # 데이터 예측 시각화
-def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_dir: os.PathLike, conf_thr: float = 0.1, n_images: int = 10) -> None:
-    """이미지에 bbox 그려서 저장 및 시각화
-    
-    :param testset: 추론에 사용되는 데이터셋
-    :type testset: Dataset
-    :param device: 추론에 사용되는 장치
-    :type device: str
-    :param model: 추론에 사용되는 모델
-    :type model: nn.Module
-    :param save_dir: 추론한 사진이 저장되는 경로
-    :type save_dir: os.PathLike
-    :param conf_thr: confidence threshold - 해당 숫자에 만족하지 않는 bounding box 걸러내는 파라미터
-    :type conf_thr: float
-    """
+def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_dir: os.PathLike, conf_thr: float = 0.12, n_images: int = 10) -> None:
     # 디렉토리 없으면 생성, 있으면 삭제 후 생성
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
@@ -45,7 +34,7 @@ def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_
         os.makedirs(save_dir)
 
     # 클래스명 설정
-    classes = ['wheat']
+    classes = ['baguette', 'croissant', 'toast', 'iceamericano', 'powerade']
 
     # 모델 상태 설정
     model.eval()
@@ -60,6 +49,7 @@ def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_
 
         # 이미지 및 예측 값 변환
         image = image[0].detach().cpu().numpy().transpose(1, 2, 0)
+        image = np.clip(image, 0, 1)  # 이미지의 픽셀 값을 0에서 1 사이로 클리핑
         pred = {k: v.detach().cpu() for k, v in pred[0].items()}
 
         plt.imshow(image)   # 이미지 열기
@@ -109,26 +99,32 @@ def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_
 # 모델 테스트
 def test(device):
     # 디렉토리 설정
-    train_image_dir = 'data/global-wheat-detection/train'
-    test_csv_path = 'data/global-wheat-detection/test_answer.csv'
+    train_image_dir = '.\\images'
 
     # 파라미터 설정
-    num_classes = 1
+    num_classes = 5
+
+    with open('json_test.json', 'r') as f:
+        json_load = json.load(f)
 
     # 데이터셋 초기화
-    test_data = WheatDataset(
+    test_data = MyDataset(
         image_dir=train_image_dir,
-        csv_path=test_csv_path,
-        transform=transforms.ToTensor(),
+        json_data=json_load,
+        transform=transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Resize((256, 256)),
+            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+            ]),
     )
 
     # 모델 초기화 및 로드
     model = fasterrcnn_resnet50_fpn(num_classes=num_classes+1)
-    model.load_state_dict(torch.load('wheat-faster-rcnn.pth'))
+    model.load_state_dict(torch.load('faster-rcnn_pp.pth'))
     model.to(device)
 
-    visualize_predictions(test_data, device, model, 'examples/global-wheat-detection/faster-rcnn')
-    print('Saved in ./examples/global-wheat-detection/faster-rcnn')
+    visualize_predictions(test_data, device, model, 'examples/faster-rcnn')
+    print('Saved in ./examples/faster-rcnn')
 
 if __name__ == '__main__':
     test(args.device)

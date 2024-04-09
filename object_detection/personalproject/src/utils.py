@@ -4,7 +4,7 @@ import json
 import os
 import random
 import glob
-
+import torch
 import pandas as pd
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
@@ -32,20 +32,28 @@ def data_split(images_dir: os.PathLike, load_json: dict, split_rate: float = 0.2
     train_json = {}
     train_json['info'] = load_json['info']
     train_json['licenses'] = load_json['licenses']
-    train_json['annotations'] = load_json['annotations']
     train_json['categories'] = load_json['categories']
     train_json['images'] = []
+    train_json['annotations'] = []
+
     test_json = {}
     test_json['info'] = load_json['info']
     test_json['licenses'] = load_json['licenses']
-    test_json['annotations'] = load_json['annotations']
     test_json['categories'] = load_json['categories']
     test_json['images'] = []
+    test_json['annotations'] = []
+
     for load_json_image in load_json['images']:
         if load_json_image['license'] == 1:
             test_json['images'].append(load_json_image)
+            for load_json_anno in load_json['annotations']:
+                if load_json_anno['image_id'] == load_json_image['id']:
+                    test_json['annotations'].append(load_json_anno)
         else:
             train_json['images'].append(load_json_image)
+            for load_json_anno in load_json['annotations']:
+                if load_json_anno['image_id'] == load_json_image['id']:
+                    train_json['annotations'].append(load_json_anno)
 
     with open('json_train.json', 'w') as make_file:
         json.dump(train_json, make_file)
@@ -62,18 +70,37 @@ class MeanAveragePrecision:
         self.coco_gt = COCO(self.json_path)
     
     def update(self, preds, image_ids):
-        # 주어진 예측과 이미지 ID에 대해 반복문 실행
+    # 주어진 예측과 이미지 ID에 대해 반복문 실행
+        with open(self.json_path, 'r') as f:
+            json_data = json.load(f)
+
         for p, image_id in zip(preds, image_ids):
+            
+            # 원본 이미지와의 비율 계산
+            for img in json_data['images']:
+                if img['id'] == image_id:
+                    origin_w, origin_h = img['width'], img['height']
+                    break
+            
+            w_ratio = origin_w / 256
+            h_ratio = origin_h / 256
+
             # 예측 박스 데이터 변환
             p['boxes'][:, 2] = p['boxes'][:, 2] - p['boxes'][:, 0]      # x1 좌표, x2 좌표 -> x1 좌표, x 길이
             p['boxes'][:, 3] = p['boxes'][:, 3] - p['boxes'][:, 1]      # y1 좌표, y2 좌표 -> y1 좌표, y 길이
 
             # cpu로 이동 후 numpy로 변환
             p['boxes'] = p['boxes'].cpu().numpy()
-            p['scores'] = p['scores'].cpu().numpy()
             p['labels'] = p['labels'].cpu().numpy()
+            p['scores'] = p['scores'].cpu().numpy()
 
-            # image_id를 coco 형식으로 변환해 detection 리스트에 추가
+            # p['boxes']값에 비율 적용
+            p['boxes'][:, 0] *= w_ratio
+            p['boxes'][:, 1] *= h_ratio
+            p['boxes'][:, 2] *= w_ratio
+            p['boxes'][:, 3] *= h_ratio
+
+            # detection 리스트에 추가
             for b, l, s in zip(*p.values()):    # boxes, labels, scores
                 self.detections.append({
                     'image_id': image_id,
@@ -81,15 +108,11 @@ class MeanAveragePrecision:
                     'bbox': b.tolist(),
                     'score': s
                 })
-        print(image_ids)
-
-        print(len(self.detections))
 
     # 결과 계산
     def compute(self):
         coco_dt = self.coco_gt.loadRes(self.detections)         # detections를 coco형식으로 변환하여 저장
-
-        coco_eval = COCOeval(self.coco_gt, coco_dt, 'bbox')     # COCOeval 객채 생성
+        coco_eval = COCOeval(self.coco_gt, coco_dt, 'bbox')     # COCOeval 객체 생성
         coco_eval.evaluate()        # 예측 결과 평가
         coco_eval.accumulate()      # 예측 결과 누적 값 계산
         coco_eval.summarize()       # 성능 요약 및 출력
