@@ -15,6 +15,8 @@ from torch import nn, optim
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+from torchvision.models.detection.transform import GeneralizedRCNNTransform
 
 from src.dataset import collate_fn, MyDataset
 from src.utils import data_split, MeanAveragePrecision
@@ -190,7 +192,7 @@ def train(device) -> None:
     # 하이퍼파라미터 설정
     num_classes = 5
     batch_size = 16
-    epochs = 100
+    epochs = 20
     lr = 1e-4
 
     with open('labelme2coco.json', 'r') as f:
@@ -216,8 +218,8 @@ def train(device) -> None:
         json_data=json_train,
         transform=transforms.Compose([
             transforms.ToTensor(),
-            transforms.Resize((256, 256)),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+            # transforms.Resize((256, 256)),
+            # transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
             ])
     )
     test_data = MyDataset(
@@ -225,8 +227,8 @@ def train(device) -> None:
         json_data=json_test,
         transform=transforms.Compose([
             transforms.ToTensor(),
-            transforms.Resize((256, 256)),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+            # transforms.Resize((256, 256)),
+            # transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
             ])
     )
 
@@ -235,7 +237,20 @@ def train(device) -> None:
     test_dataloader = DataLoader(test_data, batch_size=batch_size, num_workers=0, collate_fn=collate_fn)
 
     # 모델 초기화
-    model = fasterrcnn_resnet50_fpn(num_classes=num_classes+1).to(device)
+    def create_model(num_classes):
+        model = fasterrcnn_resnet50_fpn(pretraine=True)
+        num_classes = num_classes + 1  # 배경 클래스 추가
+        in_features = model.roi_heads.box_predictor.cls_score.in_features
+        model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+        min_size = 200
+        max_size = 600
+        image_mean = [0.485, 0.456, 0.406]
+        image_std = [0.229, 0.224, 0.225]
+        model.transform = GeneralizedRCNNTransform(min_size, max_size,image_mean, image_std)
+
+        return model.to(device)
+    
+    model = create_model(num_classes)
 
     # 옵티마이저 및 평균 정밀도 계산 객체 초기화
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=0.005)

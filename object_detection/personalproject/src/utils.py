@@ -30,15 +30,11 @@ def data_split(images_dir: os.PathLike, load_json: dict, split_rate: float = 0.2
                     img['license'] = 1
 
     train_json = {}
-    train_json['info'] = load_json['info']
-    train_json['licenses'] = load_json['licenses']
     train_json['categories'] = load_json['categories']
     train_json['images'] = []
     train_json['annotations'] = []
 
     test_json = {}
-    test_json['info'] = load_json['info']
-    test_json['licenses'] = load_json['licenses']
     test_json['categories'] = load_json['categories']
     test_json['images'] = []
     test_json['annotations'] = []
@@ -77,14 +73,14 @@ class MeanAveragePrecision:
         # 주어진 예측과 이미지 ID에 대해 반복문 실행
         for p, image_id in zip(preds, image_ids):
             
-            # 원본 이미지와의 비율 계산
-            for img in self.json_data['images']:
-                if img['id'] == image_id:
-                    origin_w, origin_h = img['width'], img['height']
-                    break
+            # # 원본 이미지와의 비율 계산
+            # for img in self.json_data['images']:
+            #     if img['id'] == image_id:
+            #         origin_w, origin_h = img['width'], img['height']
+            #         break
             
-            w_ratio = origin_w / 256
-            h_ratio = origin_h / 256
+            # w_ratio = origin_w / 256
+            # h_ratio = origin_h / 256
 
             # 예측 박스 데이터 변환
             p['boxes'][:, 2] = p['boxes'][:, 2] - p['boxes'][:, 0]      # x1 좌표, x2 좌표 -> x1 좌표, x 길이
@@ -96,10 +92,10 @@ class MeanAveragePrecision:
             p['scores'] = p['scores'].cpu().numpy()
 
             # p['boxes']값에 비율 적용
-            p['boxes'][:, 0] *= w_ratio
-            p['boxes'][:, 1] *= h_ratio
-            p['boxes'][:, 2] *= w_ratio
-            p['boxes'][:, 3] *= h_ratio
+            # p['boxes'][:, 0] *= w_ratio
+            # p['boxes'][:, 1] *= h_ratio
+            # p['boxes'][:, 2] *= w_ratio
+            # p['boxes'][:, 3] *= h_ratio
 
             # detection 리스트에 추가
             for b, l, s in zip(*p.values()):    # boxes, labels, scores
@@ -121,7 +117,6 @@ class MeanAveragePrecision:
             json.dump(copy_detection, make_file)
 
         coco_dt = self.coco_gt.loadRes(self.detections)         # detections를 coco형식으로 변환하여 저장
-
         coco_eval = COCOeval(self.coco_gt, coco_dt, 'bbox')     # COCOeval 객체 생성
         coco_eval.evaluate()        # 예측 결과 평가
         coco_eval.accumulate()      # 예측 결과 누적 값 계산
