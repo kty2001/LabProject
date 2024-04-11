@@ -25,7 +25,7 @@ args = parser.parse_args()
 
 
 # 데이터 예측 시각화
-def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_dir: os.PathLike, conf_thr: float = 0.12, n_images: int = 10) -> None:
+def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_dir: os.PathLike, conf_thr: float = 0.4, n_images: int = 10) -> None:
     # 디렉토리 없으면 생성, 있으면 삭제 후 생성
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
@@ -78,7 +78,7 @@ def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_
                 # 텍스트 추가
                 ax.text(
                     x1, y1,
-                    f'{classes[category_id-1]}: {score:.2f}',
+                    f'{classes[category_id]}: {score:.2f}',
                     c='white',
                     size=5,
                     path_effects=[pe.withStroke(linewidth=2, foreground='green')],

@@ -141,7 +141,6 @@ def val_one_epoch(dataloader: DataLoader, device, model: nn.Module, metric) -> N
     test_box_loss = 0
     test_obj_loss = 0
     test_rpn_loss = 0
-    detec = 0
     # loss 계산
     with torch.no_grad():
         for images, targets, image_ids in dataloader:
@@ -191,7 +190,7 @@ def train(device) -> None:
     # 하이퍼파라미터 설정
     num_classes = 5
     batch_size = 16
-    epochs = 5
+    epochs = 100
     lr = 1e-4
 
     with open('labelme2coco.json', 'r') as f:
