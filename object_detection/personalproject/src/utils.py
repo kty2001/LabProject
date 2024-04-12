@@ -12,11 +12,11 @@ from pycocotools.cocoeval import COCOeval
 
 def data_split(images_dir: os.PathLike, load_json: dict, split_rate: float = 0.2) -> None:
     items = os.listdir(images_dir)
-    subdirectories = [item for item in items if os.path.isdir(os.path.join(images_dir, item))]
+    subdirectories = [item for item in items if os.path.isdir(os.path.join(images_dir, item))] # 전체
     
-    for subdirectory in subdirectories:
+    for subdirectory in subdirectories: # 전체
 
-        images = glob.glob(os.path.join(f"{images_dir}\\{subdirectory}\\*.jpg"))
+        images = glob.glob(os.path.join(f"{images_dir}\\{subdirectory}\\*.jpg")) # 
 
         indices = list(range(len(images)))
         random.shuffle(indices)
@@ -26,7 +26,7 @@ def data_split(images_dir: os.PathLike, load_json: dict, split_rate: float = 0.2
 
         for test_id in test_ids:
             for img in load_json['images']:
-                if img['file_name'] == f'.\\images\\{subdirectory}\\{test_id}.jpg':
+                if img['file_name'] == f'.\\images\\{subdirectory}\\{test_id}.jpg': 
                     img['license'] = 1
 
     train_json = {}

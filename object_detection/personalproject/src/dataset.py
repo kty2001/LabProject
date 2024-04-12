@@ -34,7 +34,7 @@ class MyDataset(Dataset):
     def __getitem__(self, index: int) -> Tuple[Tensor]:
         idx_image = self.json_data['images'][index]    # index에 맞는 image_id 가져오기
 
-        image = Image.open(os.path.join(idx_image['file_name'])).convert('RGB')      # 이미지 RGB로 변환하여 열기
+        image = Image.open(os.path.join(idx_image['file_name'])).convert('RGB')
 
         boxes = []
         labels = []
@@ -46,6 +46,7 @@ class MyDataset(Dataset):
         boxes = np.array(boxes)     # 정답 박스들 numpy형으로 저장
 
         # 박스의 길이를 위치로 변환
+        boxes = boxes.astype(np.float32) # 제거
         boxes[:, 2] = boxes[:, 0] + boxes[:, 2]     # boxes[, 0]은 박스의 x 시작위치, boxes[, 2]은 박스의 x 길이
         boxes[:, 3] = boxes[:, 1] + boxes[:, 3]     # boxes[, 1]은 박스의 y 시작위치, boxes[, 3]은 박스의 y 길이
 

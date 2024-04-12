@@ -55,12 +55,12 @@ def visualize_dataset(image_dir: os.PathLike, json_data: dict, save_dir: os.Path
     # 데이터셋 범위에서 n_images개 랜덤으로 뽑기
     indices = random.choices(range(len(dataset)), k=n_images)
     for i in indices:
-        image, target, image_id = dataset[i]        # dataset[i]의 정보 이동
-        image = image.numpy().transpose(1, 2, 0)    # image 차원 변경
+        image, target, image_id = dataset[i]
+        image = image.numpy().transpose(1, 2, 0)
         image = np.clip(image, 0, 1)  # 이미지의 픽셀 값을 0에서 1 사이로 클리핑
 
-        plt.imshow(image)   # 이미지 열기
-        ax = plt.gca()      # 그래프 축 가져오기
+        plt.imshow(image)
+        ax = plt.gca()
 
         # 이미지에 박스 그리기
         for i, (x1, y1, x2, y2) in enumerate(target['boxes']):
@@ -81,7 +81,7 @@ def visualize_dataset(image_dir: os.PathLike, json_data: dict, save_dir: os.Path
             ax.add_patch(rect)
             ax.text(
                 x1, y1,                 # 텍스트의 왼쪽 하단 모서리 좌표
-                cate_dict[int(target['labels'][i])],            # 텍스트 내용
+                cate_dict[int(target['labels'][i])],
                 c='white',              # 텍스트 색상
                 size=5,                 # 텍스트 크기
                 path_effects=[pe.withStroke(linewidth=2, foreground='green')],  # 텍스트 효과
@@ -95,9 +95,9 @@ def visualize_dataset(image_dir: os.PathLike, json_data: dict, save_dir: os.Path
                 )
             )
         
-        plt.axis('off')     # 축 제거
-        plt.savefig(os.path.join(save_dir, f'{image_id}.jpg'), dpi=150, bbox_inches='tight', pad_inches=0)  # 이미지 파일 저장
-        plt.clf()   # 활성된 figure 지우고 비우기
+        plt.axis('off')
+        plt.savefig(os.path.join(save_dir, f'{image_id}.jpg'), dpi=150, bbox_inches='tight', pad_inches=0)
+        plt.clf()
 
 # 에포크 훈련
 def train_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, optimizer: torch.optim.Optimizer) -> None:
@@ -242,7 +242,7 @@ def train(device) -> None:
         num_classes = num_classes + 1  # 배경 클래스 추가
         in_features = model.roi_heads.box_predictor.cls_score.in_features
         model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
-        min_size = 200
+        min_size = 20
         max_size = 600
         image_mean = [0.485, 0.456, 0.406]
         image_std = [0.229, 0.224, 0.225]
