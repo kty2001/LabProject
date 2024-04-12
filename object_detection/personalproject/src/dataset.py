@@ -23,7 +23,7 @@ class MyDataset(Dataset):
         super().__init__()
 
         self.image_dir = image_dir  # 이미지 디렉토리 초기화
-        self.images = glob.glob(os.path.join(self.image_dir + f"\\*\\*.jpg"))
+        self.images = glob.glob(os.path.join(self.image_dir + f"\\*.jpg")) # self.images = glob.glob(os.path.join(self.image_dir + f"\\*\\*.jpg"))
         self.json_data = json_data
         self.transform = transform
 
@@ -32,21 +32,26 @@ class MyDataset(Dataset):
         return len(self.json_data['images'])  # 이미지 개수
     
     def __getitem__(self, index: int) -> Tuple[Tensor]:
+
+        cate_list = []
+        for category in self.json_data['categories']:
+            cate_list.append(category['id'])
+        
         idx_image = self.json_data['images'][index]    # index에 맞는 image_id 가져오기
 
-        image = Image.open(os.path.join(idx_image['file_name'])).convert('RGB')
+        image = Image.open(os.path.join(self.image_dir, idx_image['file_name'])).convert('RGB') # image = Image.open(os.path.join(idx_image['file_name'])).convert('RGB')
 
         boxes = []
         labels = []
         for annotataion in self.json_data['annotations']:
             if annotataion['image_id'] == idx_image['id']:
-                boxes.append(annotataion['bbox'])                
-                labels.append(annotataion['category_id'])
-        
+                boxes.append(annotataion['bbox'])
+                labels.append(cate_list.index(annotataion['category_id']))
+
+                
         boxes = np.array(boxes)     # 정답 박스들 numpy형으로 저장
 
         # 박스의 길이를 위치로 변환
-        boxes = boxes.astype(np.float32) # 제거
         boxes[:, 2] = boxes[:, 0] + boxes[:, 2]     # boxes[, 0]은 박스의 x 시작위치, boxes[, 2]은 박스의 x 길이
         boxes[:, 3] = boxes[:, 1] + boxes[:, 3]     # boxes[, 1]은 박스의 y 시작위치, boxes[, 3]은 박스의 y 길이
 
@@ -68,7 +73,6 @@ class MyDataset(Dataset):
                 'boxes': torch.as_tensor(boxes, dtype=torch.float32),
                 'labels': torch.as_tensor(labels, dtype=torch.int64)
             }
-
         return image, target, idx_image['id']
 
 # batch 전치

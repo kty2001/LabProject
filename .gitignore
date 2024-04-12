@@ -50,6 +50,12 @@ object_detection/personalproject/images/*
 !object_detection/personalproject/images/.gitkeep
 !object_detection/personalproject/images/Crawling.py
 
+# ignore Directory in object_detection/repj
+object_detection/repj/json_test.json
+object_detection/repj/json_train.json
+object_detection/repj/images/*
+!object_detection/repj/images/.gitkeep
+
 # --------------------------------------------------------------------------------------------------
 
 

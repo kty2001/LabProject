@@ -34,7 +34,7 @@ def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_
         os.makedirs(save_dir)
 
     # 클래스명 설정
-    classes = ['baguette', 'croissant', 'toast', 'iceamericano', 'powerade']
+    # classes = ['baguette', 'croissant', 'toast', 'iceamericano', 'powerade']
 
     # 모델 상태 설정
     model.eval()
@@ -78,7 +78,7 @@ def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_
                 # 텍스트 추가
                 ax.text(
                     x1, y1,
-                    f'{classes[category_id]}: {score:.2f}',
+                    f'{category_id}', # f'{classes[category_id]}: {score:.2f}',
                     c='white',
                     size=5,
                     path_effects=[pe.withStroke(linewidth=2, foreground='green')],
@@ -98,14 +98,16 @@ def visualize_predictions(testset: Dataset, device: str, model: nn.Module, save_
 
 # 모델 테스트
 def test(device):
-    # 디렉토리 설정
-    train_image_dir = '.\\images'
-
-    # 파라미터 설정
-    num_classes = 5
-
+    
     with open('json_test.json', 'r') as f:
         json_load = json.load(f)
+        json_test_path = '.\\json_test.json'
+
+    # 디렉토리 설정
+    train_image_dir = '.\\images\\val2017\\val2017'
+
+    # 파라미터 설정
+    num_classes = len(json_load['categories'])
 
     # 데이터셋 초기화
     test_data = MyDataset(

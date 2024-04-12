@@ -10,25 +10,42 @@ from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
 
 
+def data_cleaning(json_load):
+    print("--------data_cleaning--------")
+    for image in json_load['images']:
+        bboxes = []
+        for annotation in json_load['annotations']:
+            if image['id'] == annotation['image_id']:
+                bboxes.append(annotation['bbox'])
+        if len(bboxes) == 0:
+            image['license'] = -1
+    print("--------Done!--------\n")
+
+
 def data_split(images_dir: os.PathLike, load_json: dict, split_rate: float = 0.2) -> None:
-    items = os.listdir(images_dir)
-    subdirectories = [item for item in items if os.path.isdir(os.path.join(images_dir, item))] # 전체
     
-    for subdirectory in subdirectories: # 전체
+    print("--------data_split--------")
+    # items = os.listdir(images_dir)
+    # subdirectories = [item for item in items if os.path.isdir(os.path.join(images_dir, item))]
+    
+    # for subdirectory in subdirectories:
 
-        images = glob.glob(os.path.join(f"{images_dir}\\{subdirectory}\\*.jpg")) # 
+    images = glob.glob(os.path.join(f"{images_dir}\\*.jpg")) # images = glob.glob(os.path.join(f"{images_dir}\\{subdirectory}\\*.jpg"))
 
-        indices = list(range(len(images)))
-        random.shuffle(indices)
-        split_point = int(split_rate * len(images))
+    indices = list(range(len(images)))
+    random.shuffle(indices)
+    split_point = int(split_rate * len(images))
 
-        test_ids = indices[:split_point]
+    test_ids = indices[:split_point]
 
+    for img in load_json['images']:
+        if img['license'] == -1:
+            continue
+        img['license'] = 0
         for test_id in test_ids:
-            for img in load_json['images']:
-                if img['file_name'] == f'.\\images\\{subdirectory}\\{test_id}.jpg': 
-                    img['license'] = 1
-
+            if img['file_name'] == images[test_id].split("\\")[-1]: # if img['file_name'] == f'.\\images\\{subdirectory}\\{test_id}.jpg':
+                img['license'] = 1
+        
     train_json = {}
     train_json['categories'] = load_json['categories']
     train_json['images'] = []
@@ -40,7 +57,9 @@ def data_split(images_dir: os.PathLike, load_json: dict, split_rate: float = 0.2
     test_json['annotations'] = []
 
     for load_json_image in load_json['images']:
-        if load_json_image['license'] == 1:
+        if load_json_image['license'] == -1:
+            continue
+        elif load_json_image['license'] == 1:
             test_json['images'].append(load_json_image)
             for load_json_anno in load_json['annotations']:
                 if load_json_anno['image_id'] == load_json_image['id']:
@@ -57,6 +76,7 @@ def data_split(images_dir: os.PathLike, load_json: dict, split_rate: float = 0.2
         json.dump(test_json, make_file)
     print("train_json_images_len:", len(train_json['images']))
     print("test_json_images_len:", len(test_json['images']))
+    print("--------Done!--------\n")
 
 # 평균 정밀도 계산
 class MeanAveragePrecision:
@@ -73,15 +93,6 @@ class MeanAveragePrecision:
         # 주어진 예측과 이미지 ID에 대해 반복문 실행
         for p, image_id in zip(preds, image_ids):
             
-            # # 원본 이미지와의 비율 계산
-            # for img in self.json_data['images']:
-            #     if img['id'] == image_id:
-            #         origin_w, origin_h = img['width'], img['height']
-            #         break
-            
-            # w_ratio = origin_w / 256
-            # h_ratio = origin_h / 256
-
             # 예측 박스 데이터 변환
             p['boxes'][:, 2] = p['boxes'][:, 2] - p['boxes'][:, 0]      # x1 좌표, x2 좌표 -> x1 좌표, x 길이
             p['boxes'][:, 3] = p['boxes'][:, 3] - p['boxes'][:, 1]      # y1 좌표, y2 좌표 -> y1 좌표, y 길이
@@ -91,7 +102,15 @@ class MeanAveragePrecision:
             p['labels'] = p['labels'].cpu().numpy()
             p['scores'] = p['scores'].cpu().numpy()
 
-            # p['boxes']값에 비율 적용
+            # # 원본 이미지와의 비율 적용
+            # for img in self.json_data['images']:
+            #     if img['id'] == image_id:
+            #         origin_w, origin_h = img['width'], img['height']
+            #         break
+            
+            # w_ratio = origin_w / 256
+            # h_ratio = origin_h / 256
+
             # p['boxes'][:, 0] *= w_ratio
             # p['boxes'][:, 1] *= h_ratio
             # p['boxes'][:, 2] *= w_ratio

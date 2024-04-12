@@ -19,8 +19,11 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.transform import GeneralizedRCNNTransform
 
 from src.dataset import collate_fn, MyDataset
-from src.utils import data_split, MeanAveragePrecision
+from src.utils import data_split, data_cleaning, MeanAveragePrecision
 
+os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["TORCH_USE_CUDA_DSA"] = "1"
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--device", default="cpu", help="학습에 사용되는 장치")
@@ -37,8 +40,12 @@ def visualize_dataset(image_dir: os.PathLike, json_data: dict, save_dir: os.Path
     
     # json 데이터 카테고리 생성
     cate_dict = {}
-    for i, category in enumerate(json_data['categories']):
-        cate_dict[i] = category['name']
+    for category in json_data['categories']:
+        cate_dict[category['id']] = category['name']
+
+    cate_list = []
+    for category in json_data['categories']:
+        cate_list.append(category['id'])
 
     # 데이터셋 초기화
     dataset = MyDataset(
@@ -81,7 +88,7 @@ def visualize_dataset(image_dir: os.PathLike, json_data: dict, save_dir: os.Path
             ax.add_patch(rect)
             ax.text(
                 x1, y1,                 # 텍스트의 왼쪽 하단 모서리 좌표
-                cate_dict[int(target['labels'][i])],
+                cate_dict[cate_list[int(target['labels'][i])]],
                 c='white',              # 텍스트 색상
                 size=5,                 # 텍스트 크기
                 path_effects=[pe.withStroke(linewidth=2, foreground='green')],  # 텍스트 효과
@@ -108,7 +115,6 @@ def train_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, optim
         # gpu로 이동
         images = [image.to(device) for image in images]
         targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
-
         # loss 계산
         loss_dict = model(images, targets)
         loss = sum(loss_dict.values())
@@ -167,6 +173,7 @@ def val_one_epoch(dataloader: DataLoader, device, model: nn.Module, metric) -> N
             preds = model(images)
 
             # metric 업데이트
+            print("preds[0]:", preds[0])
             metric.update(preds, image_ids)
 
     # loss 평균 계산 및 출력
@@ -187,19 +194,15 @@ def val_one_epoch(dataloader: DataLoader, device, model: nn.Module, metric) -> N
 def train(device) -> None:
 
     # 디렉토리 설정
-    images_dir = '.\\images'
+    images_dir = '.\\images\\val2017\\val2017' # images_dir = '.\\images\\val_2017'
 
-    # 하이퍼파라미터 설정
-    num_classes = 5
-    batch_size = 16
-    epochs = 20
-    lr = 1e-4
-
-    with open('labelme2coco.json', 'r') as f:
+    with open('instances_val2017.json', 'r') as f: # with open('labelme2coco.json', 'r') as f:
         json_load = json.load(f)
 
+    # 데이터 정리
+    # data_cleaning(json_load)
     # 데이터 분리
-    data_split(images_dir, json_load)
+    # data_split(images_dir, json_load)
 
     with open('json_train.json', 'r') as f:
         json_train = json.load(f)
@@ -212,14 +215,21 @@ def train(device) -> None:
     visualize_dataset(images_dir, json_train, save_dir='examples/train')
     visualize_dataset(images_dir, json_test, save_dir='examples/test')
 
+    # 하이퍼파라미터 설정
+    num_classes = len(json_load['categories'])
+    print("num_classes:", num_classes)
+    batch_size = 16
+    epochs = 20
+    lr = 1e-4
+
     # 데이터셋 초기화
     training_data = MyDataset(
         image_dir=images_dir,
         json_data=json_train,
         transform=transforms.Compose([
             transforms.ToTensor(),
-            # transforms.Resize((256, 256)),
-            # transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+            transforms.Resize((256, 256)),
+            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
             ])
     )
     test_data = MyDataset(
@@ -227,8 +237,8 @@ def train(device) -> None:
         json_data=json_test,
         transform=transforms.Compose([
             transforms.ToTensor(),
-            # transforms.Resize((256, 256)),
-            # transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+            transforms.Resize((256, 256)),
+            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
             ])
     )
 
@@ -238,16 +248,9 @@ def train(device) -> None:
 
     # 모델 초기화
     def create_model(num_classes):
-        model = fasterrcnn_resnet50_fpn(pretraine=True)
+        model = fasterrcnn_resnet50_fpn()
         num_classes = num_classes + 1  # 배경 클래스 추가
-        in_features = model.roi_heads.box_predictor.cls_score.in_features
-        model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
-        min_size = 20
-        max_size = 600
-        image_mean = [0.485, 0.456, 0.406]
-        image_std = [0.229, 0.224, 0.225]
-        model.transform = GeneralizedRCNNTransform(min_size, max_size,image_mean, image_std)
-
+    
         return model.to(device)
     
     model = create_model(num_classes)
