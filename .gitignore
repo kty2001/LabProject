@@ -1,5 +1,6 @@
 __pycache__
 *.pth
+*.pt
 examples/
 codetest.ipynb
 
@@ -65,10 +66,13 @@ object_detection/ToYolo/coco_convert_auto/images/*
 !object_detection/ToYolo/coco_convert_auto/images/.gitkeep
 object_detection/ToYolo/coco_convert_auto/labels/*
 !object_detection/ToYolo/coco_convert_auto/labels/.gitkeep
+object_detection/ToYolo/coco_convert_auto/runs
 object_detection/ToYolo/coco_convert_manual/images/*
 !object_detection/ToYolo/coco_convert_manual/images/.gitkeep
 object_detection/ToYolo/coco_convert_manual/labels/*
 !object_detection/ToYolo/coco_convert_manual/labels/.gitkeep
+object_detection/ToYolo/coco_convert_manual/runs
+object_detection/ToYolo/dataset
 
 # --------------------------------------------------------------------------------------------------
 
