@@ -118,6 +118,7 @@ class MeanAveragePrecision:
 
             # detection 리스트에 추가
             for b, l, s in zip(*p.values()):    # boxes, labels, scores
+                print("image_id:", image_id)
                 self.detections.append({
                     'image_id': image_id,
                     'category_id': l,

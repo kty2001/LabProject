@@ -125,7 +125,7 @@ def train_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, optim
         optimizer.step()
 
         # 진행도 시각화
-        if batch % 10 == 0:
+        if batch % 20 == 0:
             current = batch * len(images)
             message = 'total loss: {:>4f}, cls loss: {:>4f}, box loss: {:>4f}, obj loss: {:>4f}, rpn loss: {:>4f} [{:>5d}/{:>5d}]'
             message = message.format(
@@ -152,6 +152,7 @@ def val_one_epoch(dataloader: DataLoader, device, model: nn.Module, metric) -> N
     # loss 계산
     with torch.no_grad():
         for images, targets, image_ids in dataloader:
+            print("image_ids[0]:", image_ids[0])
             # gpu로 이동
             images = [image.to(device) for image in images]
             targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
