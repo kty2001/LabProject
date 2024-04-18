@@ -74,9 +74,10 @@ object_detection/ToYolo/coco_convert_manual/labels/*
 object_detection/ToYolo/coco_convert_manual/runs
 
 # ignore Directory in object_detection/personalyolo
-object_detection/personalyolo/mydata
+object_detection/personalyolo/mydata/*
 !object_detection/personalyolo/mydata/.gitkeep
-!object_detection/personalyolo/pp/runs
+
+object_detection/personalyolo/pp/runs
 object_detection/personalyolo/pp/images/*
 !object_detection/personalyolo/pp/images/.gitkeep
 object_detection/personalyolo/pp/labels/*
