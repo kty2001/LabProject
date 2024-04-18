@@ -1,0 +1,11 @@
+path: ../pp
+train: images/train
+val: images/test
+test: 
+
+names: 
+    0: baguette
+    1: croissant
+    2: toast
+    3: iceamericano
+    4: powerade
