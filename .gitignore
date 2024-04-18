@@ -60,6 +60,8 @@ object_detection/repj/images/*
 # ignore Directory in object_detection/ToYolo
 object_detection/ToYolo/val2017/*
 !object_detection/ToYolo/val2017/.gitkeep
+object_detection/ToYolo/annotations/*
+!object_detection/ToYolo/annotations/.gitkeep
 object_detection/ToYolo/*/runs
 object_detection/ToYolo/*/*/*
 !object_detection/ToYolo/*/*/.gitkeep
@@ -68,10 +70,8 @@ object_detection/ToYolo/*/*/*
 object_detection/personalyolo/mydata/*
 !object_detection/personalyolo/mydata/.gitkeep
 object_detection/personalyolo/pp/runs
-object_detection/personalyolo/pp/images/*
-!object_detection/personalyolo/pp/images/.gitkeep
-object_detection/personalyolo/pp/labels/*
-!object_detection/personalyolo/pp/labels/.gitkeep
+object_detection/personalyolo/pp/*/*
+!object_detection/personalyolo/pp/*/.gitkeep
 
 # --------------------------------------------------------------------------------------------------
 
