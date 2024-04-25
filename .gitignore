@@ -76,4 +76,10 @@ object_detection/personalyolo/pp/*/*
 # --------------------------------------------------------------------------------------------------
 
 
+# ignore Directory in semantic_segmentation
+
+# ignore Directory in semantic_segmentation/clonecoding/pascal-voc-2012
+semantic_segmentation/clonecoding/pascal-voc-2012/data/*
+semantic_segmentation/clonecoding/pascal-voc-2012/data/.gitkeep
+
 # another Directory
