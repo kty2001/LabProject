@@ -51,6 +51,14 @@ object_detection/personalproject/images/*
 !object_detection/personalproject/images/.gitkeep
 !object_detection/personalproject/images/Crawling.py
 
+# ignore Directory in object_detection/ssdver
+object_detection/ssdver/labelme
+object_detection/ssdver/json_test.json
+object_detection/ssdver/json_train.json
+object_detection/ssdver/images/*
+!object_detection/ssdver/images/.gitkeep
+!object_detection/ssdver/images/Crawling.py
+
 # ignore Directory in object_detection/repj
 object_detection/repj/json_test.json
 object_detection/repj/json_train.json
