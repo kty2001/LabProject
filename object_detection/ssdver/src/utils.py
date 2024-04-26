@@ -104,36 +104,33 @@ class MeanAveragePrecision:
             p['scores'] = p['scores'].cpu().numpy()
             p['labels'] = p['labels'].cpu().numpy()
 
-            # # 원본 이미지와의 비율 적용
-            # for img in self.json_data['images']:
-            #     if img['id'] == image_id:
-            #         origin_w, origin_h = img['width'], img['height']
-            #         break
+            # 원본 이미지와의 비율 적용
+            for img in self.json_data['images']:
+                if img['id'] == image_id:
+                    origin_w, origin_h = img['width'], img['height']
+                    break
             
-            # w_ratio = origin_w / 256
-            # h_ratio = origin_h / 256
+            w_ratio = origin_w / 256
+            h_ratio = origin_h / 256
 
-            # p['boxes'][:, 0] *= w_ratio
-            # p['boxes'][:, 1] *= h_ratio
-            # p['boxes'][:, 2] *= w_ratio
-            # p['boxes'][:, 3] *= h_ratio
+            p['boxes'][:, 0] *= w_ratio
+            p['boxes'][:, 1] *= h_ratio
+            p['boxes'][:, 2] *= w_ratio
+            p['boxes'][:, 3] *= h_ratio
 
             # image_id를 coco 형식으로 변환해 detection 리스트에 추가
             for b, l, s in zip(*p.values()):
                 self.detections.append({
                     'image_id': image_id,
-                    'category_id': l,
+                    'category_id': int(l),
                     'bbox': b.tolist(),
-                    'score': s
+                    'score': float(s)
                 })
 
     # 결과 계산
     def compute(self):
 
         copy_detection = self.detections.copy()
-        for detec in copy_detection:
-            detec['category_id'] = int(detec['category_id'])
-            detec['score'] = float(detec['score'])
 
         with open('detections.json', 'w') as make_file:
             json.dump(copy_detection, make_file)

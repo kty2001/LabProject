@@ -12,11 +12,7 @@ import torch
 from torch import nn, optim
 from torch.utils.data import DataLoader
 from torchvision import transforms
-from torchvision.models.detection import fasterrcnn_resnet50_fpn
-from torchvision.models.detection.rpn import AnchorGenerator
-from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection import ssd300_vgg16
-from torchvision.models.detection.ssd import SSDHead, SSDPredictor
 
 from src.dataset import collate_fn, MyDataset
 from src.utils import split_dataset, cleaning_dataset, MeanAveragePrecision
@@ -43,8 +39,6 @@ def visualize_dataset(image_path: os.PathLike, json_data: dict, change_size ,sav
         change_size=change_size,
         transform=transforms.Compose([
             transforms.ToTensor(),
-            # transforms.Resize((change_size, change_size)),
-            # transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
             ])
     )
 
@@ -59,7 +53,6 @@ def visualize_dataset(image_path: os.PathLike, json_data: dict, change_size ,sav
 
     # 데이터셋 범위에서 n_images개 랜덤으로 뽑기
     indices = random.choices(range(len(dataset)), k=n_images)
-    indices = [300, 50, 100, 150, 200]
     for i in indices:
         image, target, image_id = dataset[i]        # dataset[i]의 정보 이동
         image = image.numpy().transpose(1, 2, 0)    # image 차원 변경
@@ -103,17 +96,19 @@ def visualize_dataset(image_path: os.PathLike, json_data: dict, change_size ,sav
                 )
             )
         plt.axis('off')     # 축 제거
-        plt.savefig(os.path.join(save_dir, f'{image_id}.jpg'), dpi=150, bbox_inches='tight', pad_inches=0)  # 이미지 파일 저장
+        plt.savefig(os.path.join(save_dir, f'{str(image_id).zfill(12)}.jpg'), dpi=150, bbox_inches='tight', pad_inches=0)  # 이미지 파일 저장
         plt.clf()   # 활성된 figure 지우고 비우기
 
 # 에포크 훈련
 def train_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, optimizer: torch.optim.Optimizer) -> None:
 
     size = len(dataloader.dataset)
+    current = 0
     model.train()
     for batch, (images, targets, _) in enumerate(dataloader):
         # gpu로 이동
-        images = [torch.tensor(image, dtype=torch.float32).to(device) for image in images]
+
+        images = [image.clone().detach().to(dtype=torch.float32).to(device) for image in images]
         targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
 
         # loss 계산        
@@ -126,19 +121,11 @@ def train_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, optim
         optimizer.step()
 
         # 진행도 시각화
-        if batch % 20 == 0:
-            current = batch * len(images)
-            message = 'total loss: {:>4f}, cls loss: {:>4f}, box loss: {:>4f}, obj loss: {:>4f}, rpn loss: {:>4f} [{:>5d}/{:>5d}]'
-            message = message.format(
-                loss,
-                loss_dict['loss_classifier'],
-                loss_dict['loss_box_reg'],
-                loss_dict['loss_objectness'],
-                loss_dict['loss_rpn_box_reg'],
-                current,
-                size
-            )
+        if batch % 10 == 0 or current == size:
+            message = f'[{current:>4d} / {size:>4d}], train loss: {loss:.4f}'
             print(message)
+
+        current += len(images)
 
 # 에포크 검증
 def val_one_epoch(dataloader: DataLoader, device, model: nn.Module, metric) -> None:
@@ -147,8 +134,7 @@ def val_one_epoch(dataloader: DataLoader, device, model: nn.Module, metric) -> N
     with torch.no_grad():
         for images, _, image_ids in dataloader:
             # gpu로 이동
-            images = [torch.tensor(image, dtype=torch.float32).to(device) for image in images]
-            # targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
+            images = [image.clone().detach().to(dtype=torch.float32).to(device) for image in images]
 
             # 예측
             model.eval()
@@ -166,6 +152,9 @@ def val_one_epoch(dataloader: DataLoader, device, model: nn.Module, metric) -> N
 # 모델 훈련
 def train(device) -> None:
     
+    if device == 'cuda' and torch.cuda.is_available() == True:
+        print("\n<<<  Training in cuda    >>>\n")
+    
     # 디렉토리 설정
     image_path = ".\\images\\val2017\\val2017"
 
@@ -174,10 +163,9 @@ def train(device) -> None:
         json_data = json.load(f)
 
     # 하이퍼파라미터 설정
-    num_classes = len(json_data['categories'])
-    batch_size = 4
-    epochs = 3
-    lr = 1e-4
+    batch_size = 64
+    epochs = 300
+    lr = 1e-5
     change_size = 256
 
     # 데이터 전처리
@@ -201,7 +189,7 @@ def train(device) -> None:
         change_size=change_size,
         transform=transforms.Compose([
             transforms.ToTensor(),
-            # transforms.Resize((change_size, change_size)),
+            transforms.Resize((change_size, change_size)),
             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
             ])
     )
@@ -211,7 +199,7 @@ def train(device) -> None:
         change_size=change_size,
         transform=transforms.Compose([
             transforms.ToTensor(),
-            # transforms.Resize((change_size, change_size)),
+            transforms.Resize((change_size, change_size)),
             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
             ])
     )
@@ -221,26 +209,13 @@ def train(device) -> None:
     test_dataloader = DataLoader(test_data, batch_size=batch_size, num_workers=0, collate_fn=collate_fn)
 
     
-    def create_ssd_model(num_classes):
+    def create_ssd_model():
         # SSD 모델 불러오기
         model = ssd300_vgg16(pretrained=True)
 
-        # SSDHead 수정
-        in_channels = model.classifier[0].in_channels
-        model.classifier = SSDHead(in_channels, num_classes, model.num_anchors)
-
-        # SSDPredictor 수정
-        model.predictor = SSDPredictor(model.classifier, model.box_predictor)
-
         return model.to(device)
 
-    # 모델 초기화
-    # model = fasterrcnn_resnet50_fpn(pretrained=True)
-    # in_features = model.roi_heads.box_predictor.cls_score.in_features
-    # model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes+1)
-    # model.to(device)
-
-    model = create_ssd_model(num_classes)
+    model = create_ssd_model()
 
     # 옵티마이저 및 평균 정밀도 계산 객체 초기화
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=0.005)
@@ -254,8 +229,8 @@ def train(device) -> None:
     print('Done!')
 
     # 모델 가중치 저장
-    torch.save(model.state_dict(), 'coco-faster-rcnn.pth')
-    print('Saved PtTorch Model State to coco-faster-rcnn.pth')
+    torch.save(model.state_dict(), 'ssd300_vgg16.pth')
+    print('Saved PtTorch Model State to ssd300_vgg16.pth')
 
 if __name__ == '__main__':
     train(args.device)

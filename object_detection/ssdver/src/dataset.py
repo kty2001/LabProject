@@ -58,12 +58,12 @@ class MyDataset(Dataset):
         # return 값 조정
         if self.transform is not None:
             # bbox resize
-            # origin_w, origin_h = image.size
-            # w_ratio, h_ratio = self.change_size / origin_w, self.change_size / origin_h
-            # boxes[:, 0] *= w_ratio
-            # boxes[:, 1] *= h_ratio
-            # boxes[:, 2] *= w_ratio
-            # boxes[:, 3] *= h_ratio
+            origin_w, origin_h = image.size
+            w_ratio, h_ratio = self.change_size / origin_w, self.change_size / origin_h
+            boxes[:, 0] *= w_ratio
+            boxes[:, 1] *= h_ratio
+            boxes[:, 2] *= w_ratio
+            boxes[:, 3] *= h_ratio
 
             # image에 transform 적용
             image = np.array(image) / 255.0
