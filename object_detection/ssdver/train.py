@@ -3,6 +3,7 @@ import os
 import random
 import shutil
 import json
+import warnings
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -17,6 +18,8 @@ from torchvision.models.detection import ssd300_vgg16
 from src.dataset import collate_fn, MyDataset
 from src.utils import split_dataset, cleaning_dataset, MeanAveragePrecision
 
+
+warnings.filterwarnings("ignore")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--device", default="cpu", help="학습에 사용되는 장치")
@@ -39,6 +42,7 @@ def visualize_dataset(image_path: os.PathLike, json_data: dict, change_size ,sav
         change_size=change_size,
         transform=transforms.Compose([
             transforms.ToTensor(),
+            transforms.Resize((change_size, change_size))
             ])
     )
 
@@ -47,9 +51,9 @@ def visualize_dataset(image_path: os.PathLike, json_data: dict, change_size ,sav
     for category in json_data['categories']:
         cate_dict[category['id']] = category['name']
 
-    cate_list = []
-    for category in json_data['categories']:
-        cate_list.append(category['id'])
+    # cate_list = []
+    # for category in json_data['categories']:
+    #     cate_list.append(category['id'])
 
     # 데이터셋 범위에서 n_images개 랜덤으로 뽑기
     indices = random.choices(range(len(dataset)), k=n_images)
@@ -67,7 +71,7 @@ def visualize_dataset(image_path: os.PathLike, json_data: dict, change_size ,sav
             h = y2 - y1
 
             # 카테고리 id 설정
-            category_id = cate_list[target['labels'][i]]
+            category_id = target['labels'][i]
 
             # 직사각형 객체 생성
             rect = patches.Rectangle(
@@ -82,7 +86,7 @@ def visualize_dataset(image_path: os.PathLike, json_data: dict, change_size ,sav
             ax.add_patch(rect)
             ax.text(
                 x1, y1,                 # 텍스트의 왼쪽 하단 모서리 좌표
-                cate_dict[category_id],            # 텍스트 내용
+                cate_dict[int(category_id)],            # 텍스트 내용
                 c='white',              # 텍스트 색상
                 size=5,                 # 텍스트 크기
                 path_effects=[pe.withStroke(linewidth=2, foreground='green')],  # 텍스트 효과
@@ -124,6 +128,7 @@ def train_one_epoch(dataloader: DataLoader, device: str, model: nn.Module, optim
         if batch % 10 == 0 or current == size:
             message = f'[{current:>4d} / {size:>4d}], train loss: {loss:.4f}'
             print(message)
+            print(f"reg_loss: {loss_dict['bbox_regression']}, cls_loss: {loss_dict['classification']}")
 
         current += len(images)
 
@@ -143,6 +148,8 @@ def val_one_epoch(dataloader: DataLoader, device, model: nn.Module, metric) -> N
             # metric 업데이트
             metric.update(preds, image_ids)
 
+        print(preds[0])
+        
     # metric 값 계산 및 초기화
     metric.compute()
     metric.reset()
@@ -164,13 +171,13 @@ def train(device) -> None:
 
     # 하이퍼파라미터 설정
     batch_size = 64
-    epochs = 300
+    epochs = 30
     lr = 1e-5
     change_size = 256
 
     # 데이터 전처리
-    # cleaning_dataset(json_data)
-    # split_dataset(image_path, json_data)
+    cleaning_dataset(json_data)
+    split_dataset(image_path, json_data)
 
     # train/test data 설정
     with open('train_json.json', 'r') as f:

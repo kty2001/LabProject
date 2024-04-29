@@ -119,7 +119,7 @@ class MeanAveragePrecision:
             p['boxes'][:, 3] *= h_ratio
 
             # image_id를 coco 형식으로 변환해 detection 리스트에 추가
-            for b, l, s in zip(*p.values()):
+            for b, s, l in zip(*p.values()):
                 self.detections.append({
                     'image_id': image_id,
                     'category_id': int(l),
@@ -137,7 +137,7 @@ class MeanAveragePrecision:
 
         coco_dt = self.coco_gt.loadRes(self.detections)
 
-        coco_eval = COCOeval(self.coco_gt, coco_dt, 'bbox')
+        coco_eval = COCOeval(self.coco_gt, coco_dt, iouType='bbox')
         coco_eval.evaluate()
         coco_eval.accumulate()
         coco_eval.summarize()
