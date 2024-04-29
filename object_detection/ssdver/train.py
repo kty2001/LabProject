@@ -148,8 +148,6 @@ def val_one_epoch(dataloader: DataLoader, device, model: nn.Module, metric) -> N
             # metric 업데이트
             metric.update(preds, image_ids)
 
-        print(preds[0])
-        
     # metric 값 계산 및 초기화
     metric.compute()
     metric.reset()
