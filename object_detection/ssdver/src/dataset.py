@@ -48,13 +48,6 @@ class MyDataset(Dataset):
         boxes[:, 2] = boxes[:, 0] + boxes[:, 2]
         boxes[:, 3] = boxes[:, 1] + boxes[:, 3]
 
-        # cate_list = []
-        # for cate in self.json_data['categories']:
-        #     cate_list.append(cate['id'])
-        
-        # for i in range(len(labels)):
-        #     labels[i] = cate_list.index(labels[i])
-
         # return 값 조정
         if self.transform is not None:
             # bbox resize

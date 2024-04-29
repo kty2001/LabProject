@@ -156,6 +156,7 @@ def val_one_epoch(dataloader: DataLoader, device, model: nn.Module, metric) -> N
             metric.update(preds, image_ids)
 
     # metric 값 계산 및 초기화
+    print(preds[0])
     metric.compute()
     metric.reset()
     print()
@@ -219,10 +220,13 @@ def train(device) -> None:
     test_dataloader = DataLoader(test_data, batch_size=batch_size, num_workers=0, collate_fn=collate_fn)
 
     # 모델 초기화
-    model = fasterrcnn_resnet50_fpn(pretrained=True)
-    in_features = model.roi_heads.box_predictor.cls_score.in_features
-    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes+1)
-    model.to(device)
+    def create_model(num_classes):
+        model = fasterrcnn_resnet50_fpn(pretrained=True)
+        in_features = model.roi_heads.box_predictor.cls_score.in_features
+        model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes+1)
+        return model.to(device)
+
+    model = create_model(num_classes=num_classes)
 
     # 옵티마이저 및 평균 정밀도 계산 객체 초기화
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=0.005)

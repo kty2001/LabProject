@@ -44,15 +44,11 @@ def split_dataset(image_path: os.PathLike, json_data: dict, split_rate: float = 
                 img['license'] = 0
 
     train_json = {}
-    train_json['info'] = json_data['info']
-    train_json['licenses'] = json_data['licenses']
     train_json['categories'] = json_data['categories']
     train_json['images'] = []
     train_json['annotations'] = []
 
     test_json = {}
-    test_json['info'] = json_data['info']
-    test_json['licenses'] = json_data['licenses']
     test_json['categories'] = json_data['categories']
     test_json['images'] = []
     test_json['annotations'] = []
@@ -95,6 +91,7 @@ class MeanAveragePrecision:
     def update(self, preds, image_ids):
         # 주어진 예측과 이미지 ID에 대해 반복문 실행
         for p, image_id in zip(preds, image_ids):
+            print(p.keys())
             # 예측 박스 데이터 변환
             p['boxes'][:, 2] = p['boxes'][:, 2] - p['boxes'][:, 0]
             p['boxes'][:, 3] = p['boxes'][:, 3] - p['boxes'][:, 1]
@@ -122,23 +119,25 @@ class MeanAveragePrecision:
             for b, l, s in zip(*p.values()):
                 self.detections.append({
                     'image_id': image_id,
-                    'category_id': l,
+                    'category_id': int(l),
                     'bbox': b.tolist(),
-                    'score': s
+                    'score': float(s)
                 })
 
     # 결과 계산
     def compute(self):
 
         copy_detection = self.detections.copy()
-        for detec in copy_detection:
-            detec['category_id'] = int(detec['category_id'])
-            detec['score'] = float(detec['score'])
 
         with open('detections.json', 'w') as make_file:
             json.dump(copy_detection, make_file)
 
         coco_dt = self.coco_gt.loadRes(self.detections)
+
+        annotations = coco_dt.dataset['annotations']
+        print("Annotations for predictions:", annotations)
+        image_ids = coco_dt.getImgIds()
+        print("Image IDs for predictions:", image_ids)
 
         coco_eval = COCOeval(self.coco_gt, coco_dt, 'bbox')
         coco_eval.evaluate()

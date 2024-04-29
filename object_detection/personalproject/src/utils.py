@@ -92,6 +92,7 @@ class MeanAveragePrecision:
     def update(self, preds, image_ids):
         # 주어진 예측과 이미지 ID에 대해 반복문 실행
         for p, image_id in zip(preds, image_ids):
+            print(p.keys())
             
             # 예측 박스 데이터 변환
             p['boxes'][:, 2] = p['boxes'][:, 2] - p['boxes'][:, 0]      # x1 좌표, x2 좌표 -> x1 좌표, x 길이

@@ -3,6 +3,7 @@ import os
 import random
 import shutil
 import json
+import warnings
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -17,6 +18,8 @@ from torchvision.models.detection import ssd300_vgg16
 
 from src.dataset import MyDataset
 
+
+warnings.filterwarnings("ignore")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--device", default='cpu', help='학습에 사용되는 장치')

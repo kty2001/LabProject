@@ -44,15 +44,11 @@ def split_dataset(image_path: os.PathLike, json_data: dict, split_rate: float = 
                 img['license'] = 0
 
     train_json = {}
-    train_json['info'] = json_data['info']
-    train_json['licenses'] = json_data['licenses']
     train_json['categories'] = json_data['categories']
     train_json['images'] = []
     train_json['annotations'] = []
 
     test_json = {}
-    test_json['info'] = json_data['info']
-    test_json['licenses'] = json_data['licenses']
     test_json['categories'] = json_data['categories']
     test_json['images'] = []
     test_json['annotations'] = []
