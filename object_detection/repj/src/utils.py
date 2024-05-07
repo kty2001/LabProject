@@ -81,9 +81,10 @@ def split_dataset(image_path: os.PathLike, json_data: dict, split_rate: float = 
 
 # 평균 정밀도 계산
 class MeanAveragePrecision:
-    def __init__(self, json_path: os.PathLike, json_data: dict) -> None:
+    def __init__(self, json_path: os.PathLike, json_data: dict, change_size: int) -> None:
         self.json_data = json_data
         self.json_path = json_path
+        self.change_size = change_size
         self.coco_gt = COCO(json_path)
 
         self.detections = []
@@ -91,7 +92,6 @@ class MeanAveragePrecision:
     def update(self, preds, image_ids):
         # 주어진 예측과 이미지 ID에 대해 반복문 실행
         for p, image_id in zip(preds, image_ids):
-            print(p.keys())
             # 예측 박스 데이터 변환
             p['boxes'][:, 2] = p['boxes'][:, 2] - p['boxes'][:, 0]
             p['boxes'][:, 3] = p['boxes'][:, 3] - p['boxes'][:, 1]
@@ -102,18 +102,18 @@ class MeanAveragePrecision:
             p['labels'] = p['labels'].cpu().numpy()
 
             # # 원본 이미지와의 비율 적용
-            # for img in self.json_data['images']:
-            #     if img['id'] == image_id:
-            #         origin_w, origin_h = img['width'], img['height']
-            #         break
+            for img in self.json_data['images']:
+                if img['id'] == image_id:
+                    origin_w, origin_h = img['width'], img['height']
+                    break
             
-            # w_ratio = origin_w / 256
-            # h_ratio = origin_h / 256
+            w_ratio = origin_w / self.change_size
+            h_ratio = origin_h / self.change_size
 
-            # p['boxes'][:, 0] *= w_ratio
-            # p['boxes'][:, 1] *= h_ratio
-            # p['boxes'][:, 2] *= w_ratio
-            # p['boxes'][:, 3] *= h_ratio
+            p['boxes'][:, 0] *= w_ratio
+            p['boxes'][:, 1] *= h_ratio
+            p['boxes'][:, 2] *= w_ratio
+            p['boxes'][:, 3] *= h_ratio
 
             # image_id를 coco 형식으로 변환해 detection 리스트에 추가
             for b, l, s in zip(*p.values()):
@@ -130,19 +130,27 @@ class MeanAveragePrecision:
         copy_detection = self.detections.copy()
 
         with open('detections.json', 'w') as make_file:
-            json.dump(copy_detection, make_file)
+            json.dump(copy_detection, make_file, indent=4, ensure_ascii=False)
 
-        coco_dt = self.coco_gt.loadRes(self.detections)
+        dt = []
+        for detec in copy_detection:
+            if detec['score'] >= 0.1:
+                dt.append(detec)
 
-        annotations = coco_dt.dataset['annotations']
-        print("Annotations for predictions:", annotations)
-        image_ids = coco_dt.getImgIds()
-        print("Image IDs for predictions:", image_ids)
+        with open('dt.json', 'w') as make_file:
+            json.dump(dt, make_file, indent=4, ensure_ascii=False)
 
-        coco_eval = COCOeval(self.coco_gt, coco_dt, 'bbox')
-        coco_eval.evaluate()
-        coco_eval.accumulate()
-        coco_eval.summarize()
+        try:
+            coco_dt = self.coco_gt.loadRes(self.detections)
+
+            coco_eval = COCOeval(self.coco_gt, coco_dt, 'bbox')
+            coco_eval.evaluate()
+            coco_eval.accumulate()
+            coco_eval.summarize()
+        except:
+            print("\nNo detections")
+
+        print(f"\ndetections len: {len(copy_detection)}, dt len: {len(dt)}\n")
         
     # detections 초기화
     def reset(self):

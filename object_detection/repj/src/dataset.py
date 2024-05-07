@@ -4,12 +4,11 @@ from typing import Callable, Optional, Sequence, Tuple
 
 import numpy as np
 from PIL import Image
-import pandas as pd
 
 import torch
+from torchvision import transforms
 from torch import Tensor
 from torch.utils.data import Dataset
-import time
 
 
 # 밀 데이터셋
@@ -56,19 +55,18 @@ class MyDataset(Dataset):
             labels[i] = cate_list.index(labels[i])
 
         # return 값 조정
-        if self.transform is not None:
-            # bbox resize
-            # origin_w, origin_h = image.size
-            # w_ratio, h_ratio = self.change_size / origin_w, self.change_size / origin_h
-            # boxes[:, 0] *= w_ratio
-            # boxes[:, 1] *= h_ratio
-            # boxes[:, 2] *= w_ratio
-            # boxes[:, 3] *= h_ratio
+        if any(isinstance(t, transforms.Resize) for t in self.transform.transforms):
+            origin_w, origin_h = image.size
+            w_ratio, h_ratio = self.change_size / origin_w, self.change_size / origin_h
+            boxes[:, 0] *= w_ratio
+            boxes[:, 1] *= h_ratio
+            boxes[:, 2] *= w_ratio
+            boxes[:, 3] *= h_ratio
 
-            # image에 transform 적용
-            image = np.array(image) / 255.0
-            image = self.transform(image)
-
+        # image에 transform 적용
+        # image = np.array(image) / 255.0
+        image = self.transform(image)
+        
         # target 텐서화
         target = {
             'boxes': torch.as_tensor(boxes, dtype=torch.float32),

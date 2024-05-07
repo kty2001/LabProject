@@ -3,6 +3,7 @@ import os
 import random
 import shutil
 import json
+import warnings
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -13,10 +14,13 @@ import torch
 from torch import nn
 from torch.utils.data import Dataset
 from torchvision.models.detection import fasterrcnn_resnet50_fpn
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision import transforms
 
 from src.dataset import MyDataset
 
+
+warnings.filterwarnings("ignore")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--device", default='cpu', help='학습에 사용되는 장치')
@@ -24,7 +28,7 @@ args = parser.parse_args()
 
 
 # 데이터 예측 시각화
-def visualize_predictions(testset: Dataset, json_data: dict, device: str, model: nn.Module, save_dir: os.PathLike, conf_thr: float = 0.1, n_images: int = 10) -> None:
+def visualize_predictions(testset: Dataset, json_data: dict, device: str, model: nn.Module, save_dir: os.PathLike, conf_thr: float = 0.35, n_images: int = 10) -> None:
     # 디렉토리 없으면 생성, 있으면 삭제 후 생성
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
@@ -49,7 +53,7 @@ def visualize_predictions(testset: Dataset, json_data: dict, device: str, model:
     for i in tqdm(indices):
         # testset[i] 이미지 데이터 저장 및 예측
         image, _, image_id = testset[i]
-        image = [torch.tensor(image, dtype=torch.float32).to(device)]
+        image = [image.clone().detach().to(dtype=torch.float32).to(device)]
         pred = model(image)
 
         # 이미지 및 예측 값 변환
@@ -81,10 +85,10 @@ def visualize_predictions(testset: Dataset, json_data: dict, device: str, model:
 
                 # 텍스트 추가
                 ax.text(
-                    x1, y1,
+                    x1, y1-8,
                     f'{cate_dict[cate_list[category_id]]}: {score:.2f}',
                     c='white',
-                    size=5,
+                    size=4,
                     path_effects=[pe.withStroke(linewidth=2, foreground='green')],
                     family='sans-serif',
                     weight='semibold',
@@ -97,7 +101,7 @@ def visualize_predictions(testset: Dataset, json_data: dict, device: str, model:
                 )
 
         plt.axis('off') # 축 제거
-        plt.savefig(os.path.join(save_dir, f'{image_id}.jpg'), dpi=150, bbox_inches='tight', pad_inches=0)  # figure 저장
+        plt.savefig(os.path.join(save_dir, f'{str(image_id).zfill(12)}.jpg'), dpi=150, bbox_inches='tight', pad_inches=0)  # figure 저장
         plt.clf()       # figure 초기화
 
 # 모델 테스트
@@ -120,12 +124,18 @@ def test(device):
         transform=transforms.Compose([
             transforms.ToTensor(),
             # transforms.Resize((change_size, change_size)),
-            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+            # transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
             ]),
     )
 
     # 모델 초기화 및 로드
-    model = fasterrcnn_resnet50_fpn(num_classes=num_classes+1)
+    def create_model(num_classes):
+        model = fasterrcnn_resnet50_fpn(pretrained=True)
+        in_features = model.roi_heads.box_predictor.cls_score.in_features
+        model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes+1)
+        return model.to(device)
+
+    model = create_model(num_classes=num_classes)
     model.load_state_dict(torch.load('coco-faster-rcnn.pth'))
     model.to(device)
 

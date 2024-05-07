@@ -81,9 +81,10 @@ def split_dataset(image_path: os.PathLike, json_data: dict, split_rate: float = 
 
 # 평균 정밀도 계산
 class MeanAveragePrecision:
-    def __init__(self, json_path: os.PathLike, json_data: dict) -> None:
+    def __init__(self, json_path: os.PathLike, json_data: dict, change_size: int) -> None:
         self.json_data = json_data
         self.json_path = json_path
+        self.change_size = change_size
         self.coco_gt = COCO(json_path)
 
         self.detections = []
@@ -106,8 +107,8 @@ class MeanAveragePrecision:
                     origin_w, origin_h = img['width'], img['height']
                     break
             
-            w_ratio = origin_w / 256
-            h_ratio = origin_h / 256
+            w_ratio = origin_w / self.change_size
+            h_ratio = origin_h / self.change_size
 
             p['boxes'][:, 0] *= w_ratio
             p['boxes'][:, 1] *= h_ratio

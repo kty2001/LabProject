@@ -51,10 +51,6 @@ def visualize_dataset(image_path: os.PathLike, json_data: dict, change_size ,sav
     for category in json_data['categories']:
         cate_dict[category['id']] = category['name']
 
-    # cate_list = []
-    # for category in json_data['categories']:
-    #     cate_list.append(category['id'])
-
     # 데이터셋 범위에서 n_images개 랜덤으로 뽑기
     indices = random.choices(range(len(dataset)), k=n_images)
     for i in indices:
@@ -224,7 +220,7 @@ def train(device) -> None:
 
     # 옵티마이저 및 평균 정밀도 계산 객체 초기화
     optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9, weight_decay=0.005)
-    metric = MeanAveragePrecision(json_path=".\\test_json.json", json_data=test_json_data)
+    metric = MeanAveragePrecision(json_path=".\\test_json.json", json_data=test_json_data, change_size=change_size)
 
     # 에포크마다 훈련 및 평가
     for t in range(epochs):
