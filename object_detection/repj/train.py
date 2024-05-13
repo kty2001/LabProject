@@ -210,8 +210,8 @@ def train(device) -> None:
     change_size = 1024
 
     # 데이터 전처리
-    # cleaning_dataset(json_data)
-    # split_dataset(image_path, json_data)
+    cleaning_dataset(json_data)
+    split_dataset(image_path, json_data)
 
     # train/test data 설정
     with open('train_json.json', 'r') as f:

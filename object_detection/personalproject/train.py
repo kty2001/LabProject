@@ -201,9 +201,9 @@ def train(device) -> None:
         json_load = json.load(f)
 
     # 데이터 정리
-    # data_cleaning(json_load)
+    data_cleaning(json_load)
     # 데이터 분리
-    # data_split(images_dir, json_load)
+    data_split(images_dir, json_load)
 
     with open('json_train.json', 'r') as f:
         json_train = json.load(f)

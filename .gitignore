@@ -10,19 +10,19 @@ codetest.ipynb
 
 # ignore Directory in classification
 
-# ignore Directory in classification/clonecoding
+# /clonecoding
 
 classification/clonecoding/*/data/*
 !classification/clonecoding/*/data/.gitkeep
 
-# ignore Directory in classification/WebCrawling
+# /WebCrawling
 classification/WebCrawling/*
 !classification/WebCrawling/BSCrawling.py
 !classification/WebCrawling/SNCrawling.py
 classification/WebCrawling/images/*
 !classification/WebCrawling/images/.gitkeep
 
-# ignore Directory in classification/Exer
+# /Exer
 classification/Exer/images/*
 !classification/Exer/images/.gitkeep
 !classification/Exer/images/WebCrawling.py
@@ -34,38 +34,40 @@ classification/Exer/images/*
 
 # ignore Directory in object_detection
 
-# ignore Directory in object_detection/global_wheat_detection
+# /global_wheat_detection
 object_detection/global_wheat_detection/data/*
 !object_detection/global_wheat_detection/data/.gitkeep
 
-# ignore Directory in object_detection/HAcoco
+# /HAcoco
 object_detection/HAcoco/annotations/*
 object_detection/HAcoco/val2017/*
 !object_detection/HAcoco/*/.gitkeep
 
-# ignore Directory in object_detection/personalproject
+# /personalproject
 object_detection/personalproject/labelme
 object_detection/personalproject/json_test.json
 object_detection/personalproject/json_train.json
+object_detection/personalproject/detections.json
 object_detection/personalproject/images/*
 !object_detection/personalproject/images/.gitkeep
 !object_detection/personalproject/images/Crawling.py
 
-# ignore Directory in object_detection/repj
-object_detection/repj/detections.json
+# /repj
 object_detection/repj/test_json.json
 object_detection/repj/train_json.json
+object_detection/repj/detections.json
+object_detection/repj/dt.json
 object_detection/repj/images/*
 !object_detection/repj/images/.gitkeep
 
-# ignore Directory in object_detection/ssdver
-object_detection/ssdver/detections.json
+# /ssdver
 object_detection/ssdver/test_json.json
 object_detection/ssdver/train_json.json
+object_detection/ssdver/detections.json
 object_detection/ssdver/images/*
 !object_detection/ssdver/images/.gitkeep
 
-# ignore Directory in object_detection/ToYolo
+# /ToYolo
 object_detection/ToYolo/val2017/*
 !object_detection/ToYolo/val2017/.gitkeep
 object_detection/ToYolo/annotations/*
@@ -74,7 +76,7 @@ object_detection/ToYolo/*/runs
 object_detection/ToYolo/*/*/*
 !object_detection/ToYolo/*/*/.gitkeep
 
-# ignore Directory in object_detection/personalyolo
+# /personalyolo
 object_detection/personalyolo/mydata/*
 !object_detection/personalyolo/mydata/.gitkeep
 object_detection/personalyolo/pp/runs
@@ -86,8 +88,12 @@ object_detection/personalyolo/pp/*/*
 
 # ignore Directory in semantic_segmentation
 
-# ignore Directory in semantic_segmentation/clonecoding
+# /clonecoding
 semantic_segmentation/clonecoding/data/*
 semantic_segmentation/clonecoding/data/.gitkeep
+
+
+# --------------------------------------------------------------------------------------------------
+
 
 # another Directory
