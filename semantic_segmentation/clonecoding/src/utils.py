@@ -10,7 +10,7 @@ from torchvision import transforms
 
 # 데이터셋 분리
 def split_dataset(label_dir: os.PathLike, split_rate: float = 0.2) -> None:
-    """Dirty-MNIST 데이터셋을 비율에 맞춰 train / test로 나눕니다.
+    """데이터셋을 비율에 맞춰 train / test로 나눕니다.
     
     :param label_dir: label 데이터셋 경로
     :type path: os.PathLike
