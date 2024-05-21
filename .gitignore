@@ -101,8 +101,8 @@ semantic_segmentation/clonecoding/data/.gitkeep
 
 # /
 sojongdae/codetest.ipynb
-sojongdae/clonecoding/data/.gitkeep
-
+sojongdae/*
+sojongdae/.gitkeep
 
 
 # --------------------------------------------------------------------------------------------------
