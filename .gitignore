@@ -100,8 +100,8 @@ semantic_segmentation/clonecoding/data/.gitkeep
 # ignore Directory in sojongdae
 
 # /
-!sojongdae/commandlist.ipynb
 sojongdae/*
+!sojongdae/commandlist.ipynb
 !sojongdae/.gitkeep
 
 
