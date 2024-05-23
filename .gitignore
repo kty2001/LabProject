@@ -102,8 +102,6 @@ semantic_segmentation/clonecoding/data/.gitkeep
 # /
 sojongdae/*
 !sojongdae/commandlist.ipynb
-!sojongdae/.gitkeep
-
 
 # --------------------------------------------------------------------------------------------------
 # another Directory
