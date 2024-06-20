@@ -102,6 +102,7 @@ semantic_segmentation/clonecoding/data/.gitkeep
 # /
 sojongdae/*
 !sojongdae/commandlist.ipynb
+!sojongdae/task.ipynb
 !sojongdae/신체불균형.docx
 
 # --------------------------------------------------------------------------------------------------
